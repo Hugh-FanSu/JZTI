@@ -7,6 +7,9 @@
 <title>JZTI · 鸡贼人格类型指标</title>
 <meta property="og:title" content="JZTI · 鸡贼人格类型指标">
 <meta property="og:description" content="测一测你是哪种鸡贼：华尔街之狼？散财童子？20题揭晓你的鸡贼型号。">
+<!-- Vercel Web Analytics（仅项目所有者在 Vercel 后台可见；需在 Dashboard 开启 Web Analytics） -->
+<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments);};</script>
+<script defer src="/_vercel/insights/script.js"></script>
 <style>
   :root{
     --accent:#E8743B; --accent-d:#cf5e29; --ink:#2b2b2b;
@@ -2560,7 +2563,7 @@ function show(id){
   window.scrollTo(0,0);
 }
 function start(){ cur=0; renderQ(); show('quiz'); }
-function restart(){ for(const k in answers) delete answers[k]; cur=0; document.getElementById('cardimg').style.display='none'; document.getElementById('savehint').style.display='none'; show('intro'); }
+function restart(){ for(const k in answers) delete answers[k]; cur=0; setAccent(PALETTE[0]); document.getElementById('cardimg').style.display='none'; document.getElementById('savehint').style.display='none'; show('intro'); }
 
 function renderQ(){
   const q = QUESTIONS[cur], ax = AXES[q.ai];
@@ -2624,6 +2627,8 @@ function finish(){
   if(miss){ cur=QUESTIONS.indexOf(miss); renderQ(); return; }
   document.getElementById('pfill').style.width='100%';
   const r=compute(); LAST=r; const info=TYPES[r.code];
+  const col=pal(r.code); LAST.col=col; setAccent(col);  // 色卡随型号
+  try{ window.va&&window.va('event',{name:'completed',data:{code:r.code,tier:r.tier[2],total:r.total}}); }catch(e){}
   document.getElementById('rcode').textContent=r.code;
   document.getElementById('rtitle').textContent=info.t;
   document.getElementById('rtag').textContent=info.g;
@@ -2657,12 +2662,28 @@ function finish(){
 
   document.getElementById('cardimg').style.display='none';
   document.getElementById('savehint').style.display='none';
-  drawRadar(document.getElementById('radar'), r.sums, 1);
+  drawRadar(document.getElementById('radar'), r.sums, 1, col);
   show('result');
 }
 
-/* 雷达图。scale=设备像素缩放 */
-function drawRadar(cv, sums, dpr){
+/* 色卡随型号：按“鸡贼极”数量(0~4)从暖到冷 —— 越清澈越暖，越贼越冷 */
+const PALETTE=[
+  {a:'#E8743B',d:'#cf5e29',bg1:'#FFF7F2',bg2:'#FBEADF',fill:'rgba(232,116,59,.26)'}, // 0 清澈·暖橙
+  {a:'#E0993A',d:'#bf7f22',bg1:'#FFF9EE',bg2:'#FBEFD6',fill:'rgba(224,153,58,.26)'}, // 1 暖琥珀
+  {a:'#3FA38F',d:'#2f8676',bg1:'#F1FAF6',bg2:'#DCF0E9',fill:'rgba(63,163,143,.26)'}, // 2 青绿
+  {a:'#4E7BC8',d:'#3a61a8',bg1:'#F2F6FD',bg2:'#DCE7F8',fill:'rgba(78,123,200,.26)'}, // 3 蓝
+  {a:'#6262D6',d:'#4b4bbe',bg1:'#F4F3FD',bg2:'#E3E1F7',fill:'rgba(98,98,214,.26)'}, // 4 满级·冷靛
+];
+function pal(code){ return PALETTE[[...code].filter(ch=>'ADBL'.indexOf(ch)>=0).length]; }
+const DEFCOL=PALETTE[0];
+function setAccent(col){
+  document.documentElement.style.setProperty('--accent', col.a);
+  document.documentElement.style.setProperty('--accent-d', col.d);
+}
+
+/* 雷达图。scale=设备像素缩放，col=配色（默认暖橙） */
+function drawRadar(cv, sums, dpr, col){
+  col = col||DEFCOL;
   dpr = dpr*(window.devicePixelRatio||1);
   const W=cv.width=340*dpr, H=cv.height=300*dpr;
   cv.style.width='340px'; cv.style.height='300px';
@@ -2682,10 +2703,10 @@ function drawRadar(cv, sums, dpr){
   ctx.beginPath();
   for(let k=0;k<=N;k++){ const v=sums[k%N]/25, a=ang(k%N); const x=cx+R*v*Math.cos(a), y=cy+R*v*Math.sin(a); k?ctx.lineTo(x,y):ctx.moveTo(x,y);}
   ctx.closePath();
-  ctx.fillStyle='rgba(232,116,59,.28)'; ctx.fill();
-  ctx.strokeStyle='#E8743B'; ctx.lineWidth=2*dpr; ctx.stroke();
+  ctx.fillStyle=col.fill; ctx.fill();
+  ctx.strokeStyle=col.a; ctx.lineWidth=2*dpr; ctx.stroke();
   // dots + labels
-  ctx.fillStyle='#E8743B';
+  ctx.fillStyle=col.a;
   for(let k=0;k<N;k++){ const v=sums[k]/25, a=ang(k); const x=cx+R*v*Math.cos(a), y=cy+R*v*Math.sin(a); ctx.beginPath(); ctx.arc(x,y,3*dpr,0,7); ctx.fill(); }
   ctx.fillStyle='#5a4f48'; ctx.font='bold '+(14*dpr)+'px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
   for(let k=0;k<N;k++){ const a=ang(k); const x=cx+(R+22*dpr)*Math.cos(a), y=cy+(R+18*dpr)*Math.sin(a); ctx.fillText(labels[k],x,y); }
@@ -2694,25 +2715,25 @@ function drawRadar(cv, sums, dpr){
 /* ============================== 分享卡 ============================== */
 const SITE_URL='https://jzti.vercel.app/';
 function makeCard(){
-  const r=LAST, info=TYPES[r.code];
+  const r=LAST, info=TYPES[r.code], col=pal(r.code);
   const dpr=2, W=600, H=1040, cv=document.createElement('canvas');
   cv.width=W*dpr; cv.height=H*dpr; const ctx=cv.getContext('2d'); ctx.scale(dpr,dpr);
-  // bg
-  const grad=ctx.createLinearGradient(0,0,0,H); grad.addColorStop(0,'#FFF7F2'); grad.addColorStop(1,'#FBEADF');
+  // bg —— 随型号上色
+  const grad=ctx.createLinearGradient(0,0,0,H); grad.addColorStop(0,col.bg1); grad.addColorStop(1,col.bg2);
   ctx.fillStyle=grad; ctx.fillRect(0,0,W,H);
   ctx.fillStyle='#fff'; roundRect(ctx,28,28,W-56,H-56,28); ctx.fill();
-  ctx.strokeStyle='#F3D9C8'; ctx.lineWidth=2; roundRect(ctx,28,28,W-56,H-56,28); ctx.stroke();
+  ctx.strokeStyle=col.bg2; ctx.lineWidth=2; roundRect(ctx,28,28,W-56,H-56,28); ctx.stroke();
   const CX=W/2;
   ctx.textAlign='center'; ctx.textBaseline='alphabetic';
   ctx.fillStyle='#b6a9a0'; ctx.font='15px sans-serif'; ctx.fillText('JZTI · 鸡贼人格类型指标',CX,84);
-  ctx.fillStyle='#E8743B'; ctx.font='800 78px sans-serif'; ctx.fillText(r.code,CX,170);
+  ctx.fillStyle=col.a; ctx.font='800 78px sans-serif'; ctx.fillText(r.code,CX,170);
   ctx.fillStyle='#2b2b2b'; ctx.font='800 40px sans-serif'; ctx.fillText(info.t,CX,230);
   ctx.fillStyle='#8a7d74'; ctx.font='italic 19px sans-serif'; wrap(ctx,info.g,CX,266,W-130,26);
   // radar
-  const rc=document.createElement('canvas'); drawRadar(rc,r.sums,1.05/(window.devicePixelRatio||1));
+  const rc=document.createElement('canvas'); drawRadar(rc,r.sums,1.05/(window.devicePixelRatio||1),col);
   ctx.drawImage(rc,CX-150,296,300,265);
   // index + tier
-  ctx.fillStyle='#E8743B'; ctx.font='800 30px sans-serif'; ctx.fillText('鸡贼指数 '+r.total+'/100',CX,602);
+  ctx.fillStyle=col.a; ctx.font='800 30px sans-serif'; ctx.fillText('鸡贼指数 '+r.total+'/100',CX,602);
   ctx.fillStyle='#5a4f48'; ctx.font='bold 22px sans-serif'; ctx.fillText('段位 · '+r.tier[2],CX,640);
   // quote —— 在标点处断行，避免掉行
   ctx.fillStyle='#6f6259'; ctx.font='21px sans-serif';
@@ -2730,7 +2751,7 @@ function makeCard(){
   const tx=qx+qs+28;
   ctx.textAlign='left';
   ctx.fillStyle='#2b2b2b'; ctx.font='bold 20px sans-serif'; ctx.fillText('扫码测你的鸡贼型号',tx,qy+32);
-  ctx.fillStyle='#E8743B'; ctx.font='bold 17px sans-serif'; ctx.fillText('jzti.vercel.app',tx,qy+62);
+  ctx.fillStyle=col.a; ctx.font='bold 17px sans-serif'; ctx.fillText('jzti.vercel.app',tx,qy+62);
   ctx.fillStyle='#b6a9a0'; ctx.font='13px sans-serif'; ctx.fillText('或长按本图保存转发',tx,qy+90);
   ctx.fillStyle='#cabdb3'; ctx.font='12px sans-serif'; ctx.fillText('本量表纯属娱乐 · 信效度为 0',tx,qy+114);
 
