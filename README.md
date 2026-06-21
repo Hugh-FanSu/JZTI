@@ -7,7 +7,7 @@
 
 ## 在线体验
 
-部署后填到这里：`https://<your>.vercel.app`
+👉 **https://jzti.vercel.app/**
 
 ## 文件说明
 
