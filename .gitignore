@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.pyc
+
+# macOS
+.DS_Store
+
+# Claude / 工具目录
+.claude/
+
+# 本地虚拟环境
+venv/
+.venv/

@@ -1,0 +1,6 @@
+# 部署到 Vercel 时只发布静态页，排除 Streamlit/Python 相关文件
+app.py
+scale_data.py
+__pycache__/
+*.pyc
+DEPLOY.md

@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#E8743B">
+<title>JZTI · 鸡贼人格类型指标</title>
+<meta property="og:title" content="JZTI · 鸡贼人格类型指标">
+<meta property="og:description" content="测一测你是哪种鸡贼：华尔街之狼？散财童子？20题揭晓你的鸡贼型号。">
+<style>
+  :root{
+    --accent:#E8743B; --accent-d:#cf5e29; --ink:#2b2b2b;
+    --bg:#FFF7F2; --card:#ffffff; --line:#F3D9C8; --muted:#9a8b82;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    background:linear-gradient(160deg,#FFF7F2 0%,#FDEFE6 100%); color:var(--ink);
+    min-height:100vh; line-height:1.6;
+  }
+  .wrap{max-width:560px; margin:0 auto; padding:20px 18px 48px; min-height:100vh;}
+  .screen{display:none; animation:fade .4s ease;}
+  .screen.active{display:block;}
+  @keyframes fade{from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;}}
+
+  /* HERO */
+  .hero{text-align:center; padding:36px 0 10px;}
+  .fox{font-size:62px; line-height:1;}
+  .hero h1{font-size:1.7rem; margin:.5rem 0 .3rem; letter-spacing:.04em;}
+  .hero .en{color:var(--muted); font-size:.82rem; letter-spacing:.05em;}
+  .hero p{color:#6f6259; font-size:.95rem; margin:1.1rem 4px 0;}
+  .disc{margin-top:18px; font-size:.78rem; color:#b6a9a0; background:#fff; border:1px dashed var(--line);
+        border-radius:12px; padding:10px 14px;}
+  .axes-prev{display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin:22px 0 4px;}
+  .axes-prev span{background:#fff; border:1px solid var(--line); border-radius:20px; padding:5px 13px;
+        font-size:.8rem; color:var(--accent-d); font-weight:600;}
+
+  .btn{display:block; width:100%; border:none; border-radius:16px; padding:16px;
+       background:var(--accent); color:#fff; font-size:1.08rem; font-weight:700; cursor:pointer;
+       box-shadow:0 8px 20px rgba(232,116,59,.28); transition:transform .12s, box-shadow .12s;}
+  .btn:active{transform:translateY(2px); box-shadow:0 4px 12px rgba(232,116,59,.25);}
+  .btn.ghost{background:#fff; color:var(--accent-d); border:1.5px solid var(--line); box-shadow:none;}
+  .btn-row{display:flex; gap:10px; margin-top:14px;}
+  .btn-row .btn{margin-top:0;}
+
+  /* PROGRESS */
+  .topbar{display:flex; align-items:center; gap:12px; margin-bottom:18px;}
+  .back{font-size:1.4rem; color:var(--muted); cursor:pointer; user-select:none; padding:2px 6px;}
+  .pbar{flex:1; height:8px; background:#f0e1d7; border-radius:99px; overflow:hidden;}
+  .pfill{height:100%; width:0; background:linear-gradient(90deg,var(--accent),#f0a06a); transition:width .35s;}
+  .pnum{font-size:.82rem; color:var(--muted); min-width:42px; text-align:right;}
+
+  /* QUESTION */
+  .dim-chip{display:inline-block; background:#fff; border:1px solid var(--line); color:var(--accent-d);
+        font-size:.78rem; font-weight:600; border-radius:20px; padding:4px 12px; margin-bottom:14px;}
+  .qtext{font-size:1.22rem; font-weight:650; line-height:1.55; margin:6px 0 26px; min-height:3.2em;}
+  .qhint{color:var(--muted); font-size:.8rem; margin:-18px 0 22px;}
+  .opts{display:flex; flex-direction:column; gap:11px;}
+  .opt{background:var(--card); border:1.5px solid #efe2d8; border-radius:14px; padding:15px 18px;
+       font-size:1.04rem; cursor:pointer; display:flex; align-items:center; gap:14px;
+       transition:border-color .12s, background .12s, transform .1s;}
+  .opt:active{transform:scale(.98);}
+  .opt .dot{width:18px; height:18px; border-radius:50%; border:2px solid #e3c9b8; flex:0 0 auto;}
+  .opt.sel{border-color:var(--accent); background:#FFF3EC;}
+  .opt.sel .dot{border-color:var(--accent); background:var(--accent); box-shadow:inset 0 0 0 3px #fff;}
+
+  /* RESULT */
+  .r-code{text-align:center; font-size:3.4rem; font-weight:800; letter-spacing:.4rem; color:var(--accent);
+       margin:6px 0 0; text-shadow:0 2px 0 #fff;}
+  .r-title{text-align:center; font-size:2rem; font-weight:800; margin:.1rem 0;}
+  .r-tag{text-align:center; color:#8a7d74; font-style:italic; margin-bottom:8px;}
+  .panel{background:#fff; border:1px solid var(--line); border-radius:18px; padding:18px; margin:16px 0;}
+  .radar-wrap{display:flex; justify-content:center;}
+  canvas{max-width:100%;}
+  .idx{text-align:center; margin-top:4px;}
+  .idx .big{font-size:2.2rem; font-weight:800; color:var(--accent);}
+  .idx .tier{font-size:1.1rem; font-weight:700; margin-top:2px;}
+  .idx .tier small{color:var(--muted); font-weight:400;}
+  .ibar{height:12px; background:#f0e1d7; border-radius:99px; overflow:hidden; margin:12px 2px 6px;}
+  .ifill{height:100%; background:linear-gradient(90deg,#7ec96a,#f0c14b,var(--accent),#d8412f);}
+  .dimrows{margin-top:12px;}
+  .dimrow{display:flex; align-items:center; gap:10px; font-size:.86rem; margin:7px 0;}
+  .dimrow .nm{flex:0 0 84px; color:#6f6259;}
+  .dimrow .tk{flex:1; height:8px; background:#f0e1d7; border-radius:99px; overflow:hidden;}
+  .dimrow .tk i{display:block; height:100%; background:var(--accent);}
+  .dimrow .pole{flex:0 0 auto; font-weight:700; color:var(--accent-d); font-size:.82rem;}
+  .quote{border-left:4px solid var(--accent); background:#FBF6F2; padding:11px 16px; border-radius:0 12px 12px 0;
+       color:#5a4f48; margin:14px 0; font-size:1.04rem;}
+  .pair{display:flex; gap:10px; margin-top:10px;}
+  .pair .box{flex:1; background:#F8F4F1; border-radius:14px; padding:12px 14px; text-align:center;}
+  .pair .box .lab{font-size:.78rem; color:var(--muted);}
+  .pair .box .v{font-weight:700; margin-top:3px;}
+  .pair .box .c{font-size:.74rem; color:#b6a9a0;}
+  .pair .box .why{font-size:.76rem; color:#8a7d74; margin-top:7px; line-height:1.45; text-align:left;}
+  .tierhl{background:#FBF6F2; border-radius:12px; padding:10px 14px; margin-top:12px; font-size:.92rem; color:#5a4f48;}
+  h3.sec{font-size:1.05rem; margin:22px 2px 8px; color:var(--ink);}
+  .desc{color:#5a4f48; font-size:.98rem;}
+  .cardimg{width:100%; border-radius:16px; border:1px solid var(--line); margin-top:10px; display:none;}
+  .savehint{text-align:center; color:var(--muted); font-size:.8rem; margin:8px 0 0; display:none;}
+  .foot{text-align:center; color:#c3b6ad; font-size:.76rem; margin-top:26px; line-height:1.7;}
+  .credit{text-align:center; color:#bbada3; font-size:.74rem; margin-top:12px; line-height:1.6;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ===== INTRO ===== -->
+  <section id="intro" class="screen active">
+    <div class="hero">
+      <div class="fox">🦊</div>
+      <h1>JZTI · 鸡贼人格</h1>
+      <div class="en">JīZéi Type Indicator</div>
+      <div class="axes-prev"><span>精算</span><span>闪躲</span><span>双标</span><span>薅毛</span></div>
+      <p>基于「四维鸡贼行为模型」(4D-JBM) 的非临床自评工具。<br>
+         20 题，约 2 分钟。请凭<b>第一反应</b>作答——<br>关键不是“我有没有做过”，而是“我是不是经常这样想”。</p>
+      <div class="disc">⚠️ 特别声明：本量表纯属胡编，信效度为 0，结果仅供娱乐与自嘲。</div>
+      <div class="credit">作者：公众号「人类行为研究室」<br>改造自公众号「铁围山」· 鸡贼行为倾向量表（Chengdu Cunning Scale）</div>
+    </div>
+    <button class="btn" style="margin-top:26px" onclick="start()">🔮 开始测试</button>
+  </section>
+
+  <!-- ===== QUIZ ===== -->
+  <section id="quiz" class="screen">
+    <div class="topbar">
+      <div class="back" onclick="prev()">‹</div>
+      <div class="pbar"><div class="pfill" id="pfill"></div></div>
+      <div class="pnum" id="pnum">1/20</div>
+    </div>
+    <div class="dim-chip" id="dimchip"></div>
+    <div class="qtext" id="qtext"></div>
+    <div class="qhint" id="qhint"></div>
+    <div class="opts" id="opts"></div>
+  </section>
+
+  <!-- ===== RESULT ===== -->
+  <section id="result" class="screen">
+    <div class="r-code" id="rcode"></div>
+    <div class="r-title" id="rtitle"></div>
+    <div class="r-tag" id="rtag"></div>
+
+    <div class="panel">
+      <div class="radar-wrap"><canvas id="radar" width="340" height="300"></canvas></div>
+      <div class="idx">
+        <div class="big" id="ridx"></div>
+        <div class="tier" id="rtier"></div>
+      </div>
+      <div class="ibar"><div class="ifill" id="ifill"></div></div>
+      <div class="dimrows" id="dimrows"></div>
+    </div>
+
+    <h3 class="sec">🧬 关于你的型号</h3>
+    <div class="desc" id="rdesc"></div>
+    <div class="quote" id="rquote"></div>
+    <div class="pair">
+      <div class="box"><div class="lab">☠️ 天敌</div><div class="v" id="rnem"></div><div class="c" id="rnemc"></div><div class="why" id="rnemwhy"></div></div>
+      <div class="box"><div class="lab">💞 绝配</div><div class="v" id="rmat"></div><div class="c" id="rmatc"></div><div class="why" id="rmatwhy"></div></div>
+    </div>
+
+    <h3 class="sec">🏅 段位解读</h3>
+    <div class="desc" id="rtierdesc"></div>
+
+    <h3 class="sec">📸 生成分享卡</h3>
+    <button class="btn ghost" onclick="makeCard()">生成我的鸡贼名片</button>
+    <img class="cardimg" id="cardimg" alt="分享卡">
+    <div class="savehint" id="savehint">📱 长按图片即可保存 · 电脑端右键另存 · 发群里炫一下</div>
+
+    <div class="btn-row">
+      <button class="btn ghost" onclick="restart()">↺ 再测一次</button>
+      <button class="btn" onclick="shareLink()">🔗 分享给朋友</button>
+    </div>
+    <div class="foot">JZTI · 鸡贼人格类型指标　|　本量表纯属娱乐，信效度为 0<br>
+      作者：公众号「人类行为研究室」 · 改造自公众号「铁围山」（鸡贼行为倾向量表 Chengdu Cunning Scale）</div>
+  </section>
+
+</div>
+
+<script>
+/* ============================== 数据 ============================== */
+const ANCHORS = ["从不","偶尔","有时","经常","总是"];
+const REVERSE = new Set([20]);
+
+const AXES = [
+  {dim:"维度一 · 精致的利己", sub:"表面合理，实则算计",
+   high:{l:"A",n:"精算"}, low:{l:"G",n:"大方"},
+   items:[
+     [1,"朋友请客吃饭，你会点价格适中或偏低的菜；但如果是 AA 制，你会点自己真正想吃的（可能更贵）。"],
+     [2,"你会在“人情往来”中精准计算：上次他给我孩子包了 500，这次他结婚我包 600 就觉得“够意思了”，超过 700 会心疼。"],
+     [3,"需要有人先垫钱时，你会尽量不当那个垫付的人；万一垫了，你会清楚记得每一笔，确保一分不少地收回来。"],
+     [4,"帮同事带早餐，如果对方忘了给钱，你会纠结要不要提醒，但大概率默默记住，并悄悄降低下次帮带的意愿。"],
+     [5,"别人送你一份礼物，你会下意识估算它的价格，并据此决定未来回赠一个差不多价值（或略低）的礼物。"],
+   ]},
+  {dim:"维度二 · 体面的推脱", sub:"理由充分，从不硬刚",
+   high:{l:"D",n:"闪躲"}, low:{l:"C",n:"扛事"},
+   items:[
+     [6,"团队需要有人多担一点时，你总能找到“合理”的理由（最近太忙、手头项目紧急）来避免成为那个多干的人。"],
+     [7,"需要轮流做某件麻烦事（值班、组织团建），你会确保自己不是第一个、也不是做得最多的那个。"],
+     [8,"借钱给朋友后，你会隐隐不安——不是怕对方不还，而是觉得“这钱要是拿去理财，一年也有几百块利息呢”。"],
+     [9,"你很擅长用“咨询”“请教”的方式获取别人的专业帮助（让设计师朋友“帮我看一眼”），却很少主动提出付费或请吃饭。"],
+     [10,"拒绝别人时，你总能给出一个听起来很合理、甚至像是为对方着想的理由（“这个事儿其实你自己做更好”）。"],
+   ]},
+  {dim:"维度三 · 温和的双标", sub:"严待人，宽律己，但不声张",
+   high:{l:"B",n:"双标"}, low:{l:"F",n:"公允"},
+   items:[
+     [11,"别人迟到你会觉得“不尊重人”，自己迟到则觉得“事出有因，没办法”。"],
+     [12,"你反感同事老蹭你的小零食或咖啡，但自己偶尔忘了带，会觉得“不就用一下嘛，至于吗”。"],
+     [13,"你觉得别人在群里发砍价链接、求点赞很烦，但自己需要时会想“就这么一次，没关系”。"],
+     [14,"对于别人的成功，你倾向于归因于“运气好”或“有关系”；对自己，则归因于“努力”或“能力”。"],
+     [15,"你希望别人对你“坦诚、直接”，自己对别人却更习惯“委婉、保留”，并觉得这是“情商高”。"],
+   ]},
+  {dim:"维度四 · 隐形的获利", sub:"占便宜而不自知",
+   high:{l:"L",n:"薅毛"}, low:{l:"P",n:"买单"},
+   items:[
+     [16,"在超市称重区，你会下意识多扯一个塑料袋（不是为了装垃圾，就是觉得“反正免费”）。"],
+     [17,"退货时如果商家多退了钱，你会犹豫一下，但大概率不会主动联系退回。"],
+     [18,"参加活动领免费赠品，即使自己不太需要，也会想“不拿白不拿”。"],
+     [19,"你会在心里默默核算“谁请客多、谁请客少”，并据此调整下一次自己要不要主动买单。"],
+     [20,"你觉得自己“很会过日子、从不浪费”。请问：你有多常“意识到”这种会过其实建立在占别人或公共资源便宜之上？"],
+   ]},
+];
+
+const TIERS = [
+  [20,50,"鸡贼绝缘体","Jīzéi-Insulator","本测未检出显著鸡贼信号。你边界感健康、心态豁达，是朋友圈里那个少有的“不设防”的人。结论：清澈见底，请务必保护好钱包。"],
+  [51,56,"人间标准件","Standard-Issue Human","恭喜，出厂设置的正常人类。有正常的利己与自保，偶尔的小算计无伤大雅——平平无奇，妙不可言，挺好。"],
+  [57,62,"精致利己实习生","Self-Interest Trainee","你开始有点小心思了：每件事都说得过去，但隐隐能闻到一丝“精打细算”的味道。还没上瘾，但确实已经会算了。"],
+  [63,67,"精装鸡贼","Premium Edition","你的“不吃亏”已经成了惯性。单看每件事都合理，但身边人可能隐隐觉得一种说不清的“不大气”——谈不上讨厌，就是差点儿交心。"],
+  [68,100,"鸡贼奇点","Singularity","你已把“不吃亏”内化成本能，且逻辑高度自洽。你可能很成功、很体面、甚至受人尊敬，却很难有真正“毫无防备”的亲密关系——因为你和世界的关系，一直是计算，而非托付。"],
+];
+
+const TYPES = {
+ "ADBL":{t:"华尔街之狼",g:"把人情往来跑成 Excel，每笔都算内部收益率。",d:"四维全开的满级形态。利己精算、闪躲麻烦、对人对己两套尺、免费的绝不放过。你不是坏人，你只是从不让自己在任何一笔交易里吃亏——哪怕那笔交易是友情。",q:"亲兄弟，明算账；账算完了，还是亲兄弟（大概）。",nem:"GCFP",nwhy:"他不设防的大方，把你的精打细算衬得很吵。",mat:"ACFP",mwhy:"一样会算账，但他算完不坑人——看得懂你，又不怕你。"},
+ "ADBP":{t:"口是心非财神爷",g:"嘴上博弈论，手上却常常买单。",d:"算计、闪躲、双标全部在线，唯独到了掏钱那一刻你会咬牙买单。脑子里运行着一整套利益模型，执行时却总有“算了我来吧”的破绽——别扭，但可爱。",q:"道理我都懂，但这顿我请——记得啊。",nem:"ADBL",nwhy:"一样会算，但他真下得去手，把你衬成软柿子。",mat:"GCBP",mwhy:"都嘴硬手软，互相嫌弃又互相买单，闭环了。"},
+ "ADFL":{t:"持证薅羊毛选手",g:"讲原则地占便宜，理直气壮。",d:"精算、闪躲、薅毛俱全，但你对人对己一把尺（不双标）。你占便宜从不偷偷摸摸——规则没说不行，那就是行，谁也别想让你愧疚。",q:"规则没写不能拿，那就是默许我拿。",nem:"GCBL",nwhy:"他双标地热心，你公允地薅毛，价值观天天打架。",mat:"ACFL",mwhy:"两个讲原则的过日子人，薅毛都薅在明面上，省心。"},
+ "ADFP":{t:"内耗型大善人",g:"算了半天，最后还是亏自己。",d:"脑内精算 + 习惯性想躲，但你公允、且真到关头愿意买单。典型的“想得多、做得善”——心里盘算一百遍，行动起来还是那个吃小亏的老实人。",q:"算了，算了……（这次是真的算了）",nem:"ADBL",nwhy:"你还在纠结，他已经把你算明白并安排好了。",mat:"GCBP",mwhy:"都是嘴硬心软的吃亏型，凑一起只会互相心疼。"},
+ "ACBL":{t:"又卷又贼卷王",g:"活我来干，但好处也得有我一份。",d:"精算 + 双标 + 薅毛，但麻烦事你是真扛（不躲）。又能干又爱占小便宜，让人又服气又无语——你的存在证明了“勤快”和“鸡贼”可以并存。",q:"活我干，那这点好处归我，不过分吧？",nem:"GDFP",nwhy:"你抢着扛活还要好处，他专业躲活——看着就来气。",mat:"ACBP",mwhy:"都是埋头干活、心里有本账的劳模，对得上数。"},
+ "ACBP":{t:"行走的人情账本",g:"我不计较，我只是记得特别清楚。",d:"精算 + 双标，但扛事又买单，所有算计只发生在心里那本小账上。对外是任劳任怨的老黄牛，对内有一套精密的“谁欠我”台账——牛，但牛有自己的本子。",q:"我不计较的，我就是……记性比较好。",nem:"GDFL",nwhy:"你笔笔记账，他白嫖无痕，账对不平能把你逼疯。",mat:"ACBL",mwhy:"同是又能扛又记账的人，惺惺相惜还能对账。"},
+ "ACFL":{t:"过日子十级学者",g:"该省省、该出力出力，薅毛也薅在明面上。",d:"精算 + 薅毛，但你扛事、且表里如一。你精打细算却不亏待别人，占的都是台面上的便宜，活得明白又坦荡——一个有原则的会过日子的人。",q:"该省的省，该花的花，账我自己拎得清。",nem:"GDBP",nwhy:"你精打细算地出力，他花钱免责地躲，互看不顺眼。",mat:"ADFL",mwhy:"两个讲原则的精算党，过日子的频率天生一致。"},
+ "ACFP":{t:"笑面精算师",g:"心里有杆秤，但秤从不亏待别人。",d:"只有“利己”这一维偏高，其余三维都很清澈。你脑子里时刻在算，但算来算去都没让身边人吃亏——是那种“看着精，处着暖”的可靠类型。",q:"我心里有数，数完发现：你没吃亏。",nem:"GDBL",nwhy:"你算得清还不坑人，最看不惯他啥也不算光蹭。",mat:"ADBL",mwhy:"你是少数能看穿狼的算计、还不被他坑的人。"},
+ "GDBL":{t:"躺平蹭饭仙人",g:"我没想占便宜，是便宜自己飘过来的。",d:"不主动算计（大方），但爱躲事、会双标、薅毛照单全收。憨中带贼的代表——你从不出手谋划，可一旦好处出现在射程内，你的反应快得惊人。",q:"我真没刻意争，它就……到我碗里了。",nem:"ACFP",nwhy:"他什么都门儿清，你那点小蹭一眼就被看穿。",mat:"GDFL",mwhy:"两个佛系白嫖侠，躺着一起薅，毫无心理负担。"},
+ "GDBP":{t:"花钱买清闲的甲方",g:"钱我来出，活儿谁手快谁上。",d:"大方、愿买单，但爱躲麻烦、心里也有点双标。掏钱很爽快，干活很会“恰好不在”——你用慷慨买来了不出力的额度，且收支基本平衡。",q:"钱我请！活儿……要不你们先商量着？",nem:"ACFL",nwhy:"他又出力又较真，专治你这种花钱免责。",mat:"GCBP",mwhy:"都信奉“钱能解决就别动手”，自然处得来。"},
+ "GDFL":{t:"赠品收割机",g:"不拿白不拿，拿了也不白拿。",d:"大方、公允，但爱躲事 + 免费的来者不拒。与世无争的气质里藏着一条朴素信念：能不麻烦就不麻烦，能白嫖就别客气——无害，但绝不亏待自己。",q:"赠品嘛，给了不要多不礼貌。",nem:"ACBP",nwhy:"他笔笔清算，你无痕白嫖，会被他默默记一辈子。",mat:"GDBL",mwhy:"天生的佛系薅毛搭子，躺平到一块去了。"},
+ "GDFP":{t:"退堂鼓首席演奏家",g:"唯一的“贼”，就是不爱出头。",d:"大方、公允、愿买单，唯一的鸡贼点是——能躲的麻烦事坚决躲。除了关键时刻容易“人间蒸发”，你几乎人畜无害，是个怕事但善良的好人。",q:"这事……要不你来？我请你喝奶茶。",nem:"ACBL",nwhy:"他抢着扛活还要好处，你只想躲，注定相看两厌。",mat:"GCFL",mwhy:"都是与世无争的小透明，凑一起岁月静好。"},
+ "GCBL":{t:"双标热心肠",g:"我对你好是真的，我双标也是真的。",d:"大方 + 扛事，但双标 + 爱薅毛。你是真大方、真能干，只是对别人一套标准、对自己另一套，外加免费的不放过——一个矛盾但鲜活的好人。",q:"我可以帮你，但你别学我这么干。",nem:"ADFL",nwhy:"他公允得理直气壮，专戳你藏起来的双标。",mat:"GCFL",mwhy:"都心大、不算计，相处起来松弛又自在。"},
+ "GCBP":{t:"嘴上拉黑，钱包打钱",g:"我嫌弃你归嫌弃你，钱还是我付。",d:"大方、扛事、买单，只是嘴上有点双标。评判别人时一套一套，行动上却全是付出和兜底——你的“贼”仅停留在吐槽阶段，落地全是善良。",q:"就你这样还好意思？……行吧，我转你了。",nem:"ADBP",nwhy:"你俩都口是心非，但他还会算计，你只会纯吃亏。",mat:"ADFP",mwhy:"都是嘴硬心软的老好人，互相心疼、抢着买单。"},
+ "GCFL":{t:"酒店咖啡顺手党",g:"我很清澈，除了赠品。",d:"大方、扛事、公允，几乎全清澈，唯一保留项是“免费的不拒绝”。世上最无害的一种鸡贼——你的全部“黑历史”，可能只是多拿了两包酒店的免费咖啡。",q:"免费的我不抢，但放我跟前我会收下。",nem:"ADBL",nwhy:"他把一切跑成 KPI，把你的随性衬得像没心眼。",mat:"GDFP",mwhy:"都是与世无争的小透明，处着毫无压力。"},
+ "GCFP":{t:"散财童子",g:"钱嘛，生不带来，死不带去。",d:"四维满级清澈：大方、扛事、公允、买单。朋友圈最后的圣人——也可能是大家眼里温柔的冤大头。你和世界的关系是托付，不是计算，所以你常吃小亏，却也最容易被人“毫无防备”地爱着。",q:"钱不重要，重要的是……诶我钱包呢？",nem:"ADBL",nwhy:"他算得越精，你越像个傻白甜——但你傻得快乐。",mat:"ACFP",mwhy:"他精明却不坑人，刚好接得住你的不设防。"},
+};
+
+/* ============================== 状态 ============================== */
+const QUESTIONS = [];
+AXES.forEach((ax,ai)=>ax.items.forEach(it=>QUESTIONS.push({id:it[0],text:it[1],ai})));
+let cur = 0;
+const answers = {}; // id -> choiceIndex 0..4
+
+/* ============================== 流程 ============================== */
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function start(){ cur=0; renderQ(); show('quiz'); }
+function restart(){ for(const k in answers) delete answers[k]; cur=0; document.getElementById('cardimg').style.display='none'; document.getElementById('savehint').style.display='none'; show('intro'); }
+
+function renderQ(){
+  const q = QUESTIONS[cur], ax = AXES[q.ai];
+  document.getElementById('pfill').style.width = ((cur)/QUESTIONS.length*100)+'%';
+  document.getElementById('pnum').textContent = (cur+1)+'/'+QUESTIONS.length;
+  document.getElementById('dimchip').textContent = ax.dim;
+  document.getElementById('qtext').textContent = q.text;
+  document.getElementById('qhint').textContent = REVERSE.has(q.id) ? '（本题反向计分：越常意识到，越清澈）' : '';
+  const opts = document.getElementById('opts'); opts.innerHTML='';
+  ANCHORS.forEach((a,i)=>{
+    const d=document.createElement('div');
+    d.className='opt'+(answers[q.id]===i?' sel':'');
+    d.innerHTML='<span class="dot"></span>'+a;
+    d.onclick=()=>choose(i);
+    opts.appendChild(d);
+  });
+}
+let locked=false;  // 防止快速连点跳过题目（曾导致结果 NaN）
+function choose(i){
+  if(locked) return;
+  locked=true;
+  answers[QUESTIONS[cur].id]=i;
+  renderQ();
+  setTimeout(()=>{
+    locked=false;
+    if(cur<QUESTIONS.length-1){ cur++; renderQ(); } else { finish(); }
+  }, 180);
+}
+function prev(){
+  if(locked) return;
+  if(cur>0){ cur--; renderQ(); } else { show('intro'); }
+}
+
+/* 每个维度的“一句话风味”，用于个性化段位解读 */
+const DIMFLAVOR = [
+  {hi:"对钱和人情，心里有一杆精密的秤", lo:"对钱和人情，没那么斤斤计较"},
+  {hi:"麻烦事总能体面地绕开",         lo:"该担的事，从不往后缩"},
+  {hi:"对己宽、对人严，还藏得不动声色", lo:"对人对己，基本一把尺"},
+  {hi:"免费的便宜，实在很难拒绝",       lo:"宁可自己吃点亏，也不占人便宜"},
+];
+
+/* ============================== 计分 ============================== */
+function scoreItem(id,ci){ return REVERSE.has(id) ? 5-ci : ci+1; }
+function compute(){
+  const sums=[0,0,0,0];
+  QUESTIONS.forEach(q=>{ sums[q.ai]+=scoreItem(q.id, answers[q.id]); });
+  let code=''; AXES.forEach((ax,i)=> code += (sums[i]>=15? ax.high.l : ax.low.l));
+  const total=sums.reduce((a,b)=>a+b,0);
+  let tier=TIERS[1]; for(const t of TIERS){ if(total>=t[0]&&total<=t[1]){tier=t;break;} }
+  // 最贼 / 最清澈维度（并列取第一个）
+  let hi=0, lo=0;
+  for(let i=1;i<4;i++){ if(sums[i]>sums[hi]) hi=i; if(sums[i]<sums[lo]) lo=i; }
+  return {sums,code,total,tier,hi,lo};
+}
+
+/* ============================== 结果 ============================== */
+let LAST=null;
+function finish(){
+  // 兜底：若有题没作答（理论上不会），跳回那一题，绝不显示 NaN
+  const miss = QUESTIONS.find(q=>answers[q.id]==null);
+  if(miss){ cur=QUESTIONS.indexOf(miss); renderQ(); return; }
+  document.getElementById('pfill').style.width='100%';
+  const r=compute(); LAST=r; const info=TYPES[r.code];
+  document.getElementById('rcode').textContent=r.code;
+  document.getElementById('rtitle').textContent=info.t;
+  document.getElementById('rtag').textContent=info.g;
+  document.getElementById('ridx').textContent=r.total+' / 100';
+  document.getElementById('rtier').innerHTML='段位 · '+r.tier[2]+'　<small>'+r.tier[3]+'</small>';
+  document.getElementById('ifill').style.width=Math.min(r.total,100)+'%';
+
+  const rows=document.getElementById('dimrows'); rows.innerHTML='';
+  AXES.forEach((ax,i)=>{
+    const pole = r.sums[i]>=15? ax.high.n : ax.low.n;
+    const pct = Math.round(r.sums[i]/25*100);
+    rows.innerHTML += '<div class="dimrow"><span class="nm">'+ax.dim.split('·')[1].trim()+
+      '</span><span class="tk"><i style="width:'+pct+'%"></i></span><span class="pole">'+pole+' '+r.sums[i]+'</span></div>';
+  });
+
+  document.getElementById('rdesc').textContent=info.d;
+  document.getElementById('rquote').textContent='口头禅：「'+info.q+'」';
+  document.getElementById('rnem').textContent=TYPES[info.nem].t;
+  document.getElementById('rnemc').textContent=info.nem;
+  document.getElementById('rnemwhy').textContent=info.nwhy||'';
+  document.getElementById('rmat').textContent=TYPES[info.mat].t;
+  document.getElementById('rmatc').textContent=info.mat;
+  document.getElementById('rmatwhy').textContent=info.mwhy||'';
+
+  // 个性化段位解读：总评 + 按最高/最低维度生成
+  const hiName=AXES[r.hi].high.n, loName=AXES[r.lo].low.n;
+  document.getElementById('rtierdesc').innerHTML =
+    r.tier[4] +
+    '<div class="tierhl"><b>🔍 你最贼的一面：'+hiName+'（'+r.sums[r.hi]+'/25）</b><br>'+DIMFLAVOR[r.hi].hi+'。</div>' +
+    '<div class="tierhl"><b>✨ 你最清澈的一面：'+loName+'（'+r.sums[r.lo]+'/25）</b><br>'+DIMFLAVOR[r.lo].lo+'。</div>';
+
+  document.getElementById('cardimg').style.display='none';
+  document.getElementById('savehint').style.display='none';
+  drawRadar(document.getElementById('radar'), r.sums, 1);
+  show('result');
+}
+
+/* 雷达图。scale=设备像素缩放 */
+function drawRadar(cv, sums, dpr){
+  dpr = dpr*(window.devicePixelRatio||1);
+  const W=cv.width=340*dpr, H=cv.height=300*dpr;
+  cv.style.width='340px'; cv.style.height='300px';
+  const ctx=cv.getContext('2d'); ctx.clearRect(0,0,W,H);
+  const cx=W/2, cy=H/2+6*dpr, R=Math.min(W,H)*0.34;
+  const labels=AXES.map(a=>a.high.n), N=4;
+  const ang=k=> -Math.PI/2 + k*2*Math.PI/N;
+  // grid
+  ctx.strokeStyle='#e8d8cd'; ctx.lineWidth=1*dpr;
+  for(let g=1; g<=4; g++){
+    ctx.beginPath();
+    for(let k=0;k<=N;k++){ const rr=R*g/4, a=ang(k%N); const x=cx+rr*Math.cos(a), y=cy+rr*Math.sin(a); k?ctx.lineTo(x,y):ctx.moveTo(x,y);}
+    ctx.stroke();
+  }
+  for(let k=0;k<N;k++){ const a=ang(k); ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+R*Math.cos(a),cy+R*Math.sin(a)); ctx.stroke(); }
+  // shape
+  ctx.beginPath();
+  for(let k=0;k<=N;k++){ const v=sums[k%N]/25, a=ang(k%N); const x=cx+R*v*Math.cos(a), y=cy+R*v*Math.sin(a); k?ctx.lineTo(x,y):ctx.moveTo(x,y);}
+  ctx.closePath();
+  ctx.fillStyle='rgba(232,116,59,.28)'; ctx.fill();
+  ctx.strokeStyle='#E8743B'; ctx.lineWidth=2*dpr; ctx.stroke();
+  // dots + labels
+  ctx.fillStyle='#E8743B';
+  for(let k=0;k<N;k++){ const v=sums[k]/25, a=ang(k); const x=cx+R*v*Math.cos(a), y=cy+R*v*Math.sin(a); ctx.beginPath(); ctx.arc(x,y,3*dpr,0,7); ctx.fill(); }
+  ctx.fillStyle='#5a4f48'; ctx.font='bold '+(14*dpr)+'px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  for(let k=0;k<N;k++){ const a=ang(k); const x=cx+(R+22*dpr)*Math.cos(a), y=cy+(R+18*dpr)*Math.sin(a); ctx.fillText(labels[k],x,y); }
+}
+
+/* ============================== 分享卡 ============================== */
+function makeCard(){
+  const r=LAST, info=TYPES[r.code];
+  const dpr=2, W=600, H=900, cv=document.createElement('canvas');
+  cv.width=W*dpr; cv.height=H*dpr; const ctx=cv.getContext('2d'); ctx.scale(dpr,dpr);
+  // bg
+  const grad=ctx.createLinearGradient(0,0,0,H); grad.addColorStop(0,'#FFF7F2'); grad.addColorStop(1,'#FBEADF');
+  ctx.fillStyle=grad; ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#fff'; roundRect(ctx,28,28,W-56,H-56,28); ctx.fill();
+  ctx.strokeStyle='#F3D9C8'; ctx.lineWidth=2; roundRect(ctx,28,28,W-56,H-56,28); ctx.stroke();
+  const CX=W/2;
+  ctx.textAlign='center';
+  ctx.fillStyle='#b6a9a0'; ctx.font='15px sans-serif'; ctx.fillText('JZTI · 鸡贼人格类型指标',CX,84);
+  ctx.fillStyle='#E8743B'; ctx.font='800 78px sans-serif'; ctx.fillText(r.code,CX,170);
+  ctx.fillStyle='#2b2b2b'; ctx.font='800 40px sans-serif'; ctx.fillText(info.t,CX,230);
+  ctx.fillStyle='#8a7d74'; ctx.font='italic 19px sans-serif'; wrap(ctx,info.g,CX,266,W-130,26);
+  // radar
+  const rc=document.createElement('canvas'); drawRadar(rc,r.sums,1.05/(window.devicePixelRatio||1));
+  ctx.drawImage(rc,CX-150,300,300,265);
+  // index + tier
+  ctx.fillStyle='#E8743B'; ctx.font='800 30px sans-serif'; ctx.fillText('鸡贼指数 '+r.total+'/100',CX,612);
+  ctx.fillStyle='#5a4f48'; ctx.font='bold 22px sans-serif'; ctx.fillText('段位 · '+r.tier[2],CX,648);
+  // quote
+  ctx.fillStyle='#6f6259'; ctx.font='21px sans-serif'; wrap(ctx,'「'+info.q+'」',CX,700,W-130,30);
+  // nem/mat
+  ctx.fillStyle='#8a7d74'; ctx.font='17px sans-serif';
+  ctx.fillText('☠️ 天敌：'+TYPES[info.nem].t+'（'+info.nem+'）',CX,800);
+  ctx.fillText('💞 绝配：'+TYPES[info.mat].t+'（'+info.mat+'）',CX,828);
+  ctx.fillStyle='#c3b6ad'; ctx.font='14px sans-serif'; ctx.fillText('测测你的鸡贼型号 · 本量表纯属娱乐，信效度为 0',CX,860);
+
+  const img=document.getElementById('cardimg');
+  img.src=cv.toDataURL('image/png');
+  img.style.display='block';
+  document.getElementById('savehint').style.display='block';
+  setTimeout(()=>img.scrollIntoView({behavior:'smooth',block:'center'}),60);
+}
+function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function wrap(ctx,text,cx,y,maxW,lh){
+  const chars=[...text]; let line='', lines=[];
+  for(const ch of chars){ if(ctx.measureText(line+ch).width>maxW){ lines.push(line); line=ch; } else line+=ch; }
+  if(line) lines.push(line);
+  lines.forEach((l,i)=>ctx.fillText(l,cx,y+i*lh));
+}
+
+/* ============================== 分享 ============================== */
+function shareLink(){
+  const url=location.href.split('#')[0];
+  const r=LAST, info=r?TYPES[r.code]:null;
+  const text=info? `我的鸡贼型号是 ${r.code}「${info.t}」，鸡贼指数 ${r.total}/100。来测测你的👉` : '来测测你的鸡贼型号👉';
+  if(navigator.share){ navigator.share({title:'JZTI 鸡贼人格', text, url}).catch(()=>{}); }
+  else { navigator.clipboard?.writeText(text+' '+url).then(()=>alert('链接已复制，去粘贴给朋友吧！'),()=>prompt('复制这条链接分享：',url)); }
+}
+</script>
+</body>
+</html>
