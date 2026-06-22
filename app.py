@@ -13,8 +13,8 @@ import numpy as np
 import streamlit as st
 
 from scale_data import (
-    AXES, ANCHORS, TYPES, TIERS,
-    axis_scores, type_code, tier_of,
+    AXES, ANCHORS, TYPES, TIERS, DIM_MID,
+    dim_raw, dim_display, jindex, total_raw, type_code, tier_of,
 )
 
 # ---------------------------------------------------------------------------
@@ -93,7 +93,7 @@ st.caption("作者：公众号「人类行为研究室」 · 改造自公众号�
 # ---------------------------------------------------------------------------
 # 答题
 # ---------------------------------------------------------------------------
-RADIO_OPTS = list(range(5))  # 0..4
+RADIO_OPTS = list(range(len(ANCHORS)))  # 0..3（4 选项）
 
 with st.form("sbti"):
     answers = {}
@@ -103,17 +103,21 @@ with st.form("sbti"):
             f'<div class="dim-sub">{ax["subtitle"]}</div></div>',
             unsafe_allow_html=True,
         )
-        for item_id, text in ax["items"]:
+        for item_id, text, _rev in ax["items"]:
             choice = st.radio(
                 f"**{item_id}.** {text}",
                 options=RADIO_OPTS,
                 format_func=lambda i: ANCHORS[i],
-                index=2,  # 默认“有时”，居中
+                index=None,  # 强制选边，不预选
                 horizontal=True,
                 key=f"q{item_id}",
             )
             answers[item_id] = choice
     submitted = st.form_submit_button("🔮 出结果", use_container_width=True)
+
+if submitted and any(v is None for v in answers.values()):
+    st.warning("还有题没答完哦，请把 24 题都选上再出结果。")
+    submitted = False
 
 
 # ---------------------------------------------------------------------------
@@ -122,7 +126,7 @@ with st.form("sbti"):
 def radar_figure(sums):
     """四维雷达图，返回 matplotlib Figure。sums: 4 个 5–25 的分数。"""
     labels = [ax["high"]["name"] for ax in AXES]  # 精算/闪躲/双标/薅毛
-    vals = [s / 25 * 100 for s in sums]
+    vals = [dim_display(s) for s in sums]
     N = len(labels)
     angles = np.linspace(0, 2 * np.pi, N, endpoint=False).tolist()
     vals_c = vals + vals[:1]
@@ -144,7 +148,7 @@ def radar_figure(sums):
     return fig
 
 
-def share_card(code, info, tier_name, total, sums):
+def share_card(code, info, tier_name, index, sums):
     """生成一张可截图分享的结果卡（含小雷达图）。返回 PNG bytes。"""
     fig = plt.figure(figsize=(6.4, 8.4), dpi=160)
     fig.patch.set_facecolor("#FFFFFF")
@@ -158,7 +162,7 @@ def share_card(code, info, tier_name, total, sums):
 
     # 雷达图嵌入
     labels = [ax["high"]["name"] for ax in AXES]
-    vals = [s / 25 * 100 for s in sums]
+    vals = [dim_display(s) for s in sums]
     N = len(labels)
     angles = np.linspace(0, 2 * np.pi, N, endpoint=False).tolist()
     rad = fig.add_axes([0.27, 0.40, 0.46, 0.32], polar=True)
@@ -172,7 +176,7 @@ def share_card(code, info, tier_name, total, sums):
     rad.fill(angles + angles[:1], vals + vals[:1], color=ACCENT, alpha=0.25)
     rad.grid(color="#e3e3e3")
 
-    fig.text(0.5, 0.345, f"段位：{tier_name}　|　鸡贼指数 {total}/100",
+    fig.text(0.5, 0.345, f"段位：{tier_name}　|　鸡贼指数 {index}/100",
              ha="center", fontsize=14, fontweight="bold", color=ACCENT)
 
     # 语录
@@ -202,9 +206,10 @@ def share_card(code, info, tier_name, total, sums):
 # ---------------------------------------------------------------------------
 if submitted:
     code, sums = type_code(answers)
-    total = sum(sums)
+    total = total_raw(answers)
+    index = jindex(total)
     info = TYPES[code]
-    tier_name, tier_en, tier_desc = tier_of(total)
+    tier_name, tier_en, tier_desc = tier_of(index)
 
     st.markdown("---")
     st.markdown(f'<div class="result-code">{code}</div>', unsafe_allow_html=True)
@@ -215,14 +220,14 @@ if submitted:
     with c1:
         st.pyplot(radar_figure(sums))
     with c2:
-        st.metric("鸡贼指数", f"{total} / 100")
+        st.metric("鸡贼指数", f"{index} / 100")
         st.markdown(f"**段位　{tier_name}**  \n<span style='color:#999'>{tier_en}</span>",
                     unsafe_allow_html=True)
-        st.progress(min(total, 100) / 100)
+        st.progress(min(index, 100) / 100)
         # 各维度小条
         for ax, s in zip(AXES, sums):
-            pole = ax["high"]["name"] if s >= 15 else ax["low"]["name"]
-            st.caption(f"{ax['dim'].split('·')[1].strip()}：{s}/25 → **{pole}**")
+            pole = ax["high"]["name"] if s >= DIM_MID else ax["low"]["name"]
+            st.caption(f"{ax['dim'].split('·')[1].strip()}：{s}/30 → **{pole}**")
 
     st.markdown(f"#### 🧬 关于「{info['title']}」")
     st.write(info["desc"])
@@ -246,8 +251,8 @@ if submitted:
 
     # 分享卡
     st.markdown("#### 📸 一键生成分享卡")
-    card = share_card(code, info, tier_name, total, sums)
-    st.image(card, caption="长按/右键保存，或点下方按钮下载，发朋友圈装个逆。", use_container_width=True)
+    card = share_card(code, info, tier_name, index, sums)
+    st.image(card, caption="长按/右键保存，或点下方按钮下载，发群里炫一下。", use_container_width=True)
     st.download_button("⬇️ 下载分享卡 (PNG)", data=card,
                        file_name=f"JZTI_{code}.png", mime="image/png",
                        use_container_width=True)

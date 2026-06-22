@@ -116,7 +116,7 @@
       <div class="en">JīZéi Type Indicator</div>
       <div class="axes-prev"><span>精算</span><span>闪躲</span><span>双标</span><span>薅毛</span></div>
       <p>基于「四维鸡贼行为模型」(4D-JBM) 的非临床自评工具。<br>
-         20 题，约 2 分钟。请凭<b>第一反应</b>作答——<br>关键不是“我有没有做过”，而是“我是不是经常这样想”。</p>
+         24 题，约 3 分钟。请凭<b>第一反应</b>作答——<br>关键不是“我有没有做过”，而是“我是不是经常这样想”。</p>
       <div class="disc">⚠️ 特别声明：本量表纯属胡编，信效度为 0，结果仅供娱乐与自嘲。</div>
       <div class="credit">作者：公众号「人类行为研究室」<br>改造自公众号「铁围山」· 鸡贼行为倾向量表（Chengdu Cunning Scale）</div>
     </div>
@@ -128,7 +128,7 @@
     <div class="topbar">
       <div class="back" onclick="prev()">‹</div>
       <div class="pbar"><div class="pfill" id="pfill"></div></div>
-      <div class="pnum" id="pnum">1/20</div>
+      <div class="pnum" id="pnum">1/24</div>
     </div>
     <div class="dim-chip" id="dimchip"></div>
     <div class="qtext" id="qtext"></div>
@@ -2481,54 +2481,60 @@ var qrcode = function() {
 </script>
 <script>
 /* ============================== 数据 ============================== */
-const ANCHORS = ["从不","偶尔","有时","经常","总是"];
-const REVERSE = new Set([20]);
+const ANCHORS = ["从不","偶尔","经常","总是"];  // 4 选项·强制选边
+const REVERSE = new Set([3,6,9,12,15,18,21,24]);  // 反向题：得分 = 6 − 选项
 
 const AXES = [
   {dim:"维度一 · 精致的利己", sub:"表面合理，实则算计",
    high:{l:"A",n:"精算"}, low:{l:"G",n:"大方"},
    items:[
-     [1,"朋友请客吃饭，你会点价格适中或偏低的菜；但如果是 AA 制，你会点自己真正想吃的（可能更贵）。"],
-     [2,"你会在“人情往来”中精准计算：上次他给我孩子包了 500，这次他结婚我包 600 就觉得“够意思了”，超过 700 会心疼。"],
-     [3,"需要有人先垫钱时，你会尽量不当那个垫付的人；万一垫了，你会清楚记得每一笔，确保一分不少地收回来。"],
-     [4,"帮同事带早餐，如果对方忘了给钱，你会纠结要不要提醒，但大概率默默记住，并悄悄降低下次帮带的意愿。"],
-     [5,"别人送你一份礼物，你会下意识估算它的价格，并据此决定未来回赠一个差不多价值（或略低）的礼物。"],
+     [1,"和朋友 AA 时，你会暗暗留意自己有没有多付，哪怕只差几块钱。",false],
+     [2,"别人请过你一次，你会记着“下次得还回去”，而且大致按对方花的价位来还。",false],
+     [3,"聚餐买单，你常会主动抢着付，不太计较这次是不是该你。",true],
+     [4,"需要有人先垫钱时，你会尽量不做那个垫付的人。",false],
+     [5,"帮人垫过钱或带过东西，对方没及时结，你会一直记着，并悄悄不太想再帮第二次。",false],
+     [6,"别人忘了还你一笔小钱，你转头就忘了，根本不放在心上。",true],
    ]},
   {dim:"维度二 · 体面的推脱", sub:"理由充分，从不硬刚",
    high:{l:"D",n:"闪躲"}, low:{l:"C",n:"扛事"},
    items:[
-     [6,"团队需要有人多担一点时，你总能找到“合理”的理由（最近太忙、手头项目紧急）来避免成为那个多干的人。"],
-     [7,"需要轮流做某件麻烦事（值班、组织团建），你会确保自己不是第一个、也不是做得最多的那个。"],
-     [8,"借钱给朋友后，你会隐隐不安——不是怕对方不还，而是觉得“这钱要是拿去理财，一年也有几百块利息呢”。"],
-     [9,"你很擅长用“咨询”“请教”的方式获取别人的专业帮助（让设计师朋友“帮我看一眼”），却很少主动提出付费或请吃饭。"],
-     [10,"拒绝别人时，你总能给出一个听起来很合理、甚至像是为对方着想的理由（“这个事儿其实你自己做更好”）。"],
+     [7,"分配任务时，你会下意识先挑那份最省事的。",false],
+     [8,"团队需要有人多干时，你总能找到合理的理由，让自己不当那个多干的人。",false],
+     [9,"大家都在互相推的烫手活儿，你常会主动接下来。",true],
+     [10,"轮流做麻烦事（值班、组织活动），你会尽量不当第一个、也不做最多的那个。",false],
+     [11,"出了问题要有人担责时，你的第一反应是先想清楚“这事怎么算不到我头上”。",false],
+     [12,"答应了别人的事，哪怕后来发现很麻烦、自己吃亏，你也会做完。",true],
    ]},
   {dim:"维度三 · 温和的双标", sub:"严待人，宽律己，但不声张",
    high:{l:"B",n:"双标"}, low:{l:"F",n:"公允"},
    items:[
-     [11,"别人迟到你会觉得“不尊重人”，自己迟到则觉得“事出有因，没办法”。"],
-     [12,"你反感同事老蹭你的小零食或咖啡，但自己偶尔忘了带，会觉得“不就用一下嘛，至于吗”。"],
-     [13,"你觉得别人在群里发砍价链接、求点赞很烦，但自己需要时会想“就这么一次，没关系”。"],
-     [14,"对于别人的成功，你倾向于归因于“运气好”或“有关系”；对自己，则归因于“努力”或“能力”。"],
-     [15,"你希望别人对你“坦诚、直接”，自己对别人却更习惯“委婉、保留”，并觉得这是“情商高”。"],
+     [13,"同样是迟到，别人迟到你会有点介意，自己迟到你会觉得情有可原。",false],
+     [14,"同样一件麻烦别人的小事（求点赞、借东西），别人做你嫌烦，自己做你觉得“就这一次没关系”。",false],
+     [15,"评价一件事，你会尽量用同一把尺子，不会因为是自己就放宽标准。",true],
+     [16,"别人成功，你容易想到“运气好、有关系”；自己成功，你更愿意归功于努力和能力。",false],
+     [17,"你希望别人对你坦诚直接，自己对别人却习惯委婉保留，还觉得这才是高情商。",false],
+     [18,"自己做错了，你能像要求别人一样要求自己，照样认错。",true],
    ]},
   {dim:"维度四 · 隐形的获利", sub:"占便宜而不自知",
    high:{l:"L",n:"薅毛"}, low:{l:"P",n:"买单"},
    items:[
-     [16,"在超市称重区，你会下意识多扯一个塑料袋（不是为了装垃圾，就是觉得“反正免费”）。"],
-     [17,"退货时如果商家多退了钱，你会犹豫一下，但大概率不会主动联系退回。"],
-     [18,"参加活动领免费赠品，即使自己不太需要，也会想“不拿白不拿”。"],
-     [19,"你会在心里默默核算“谁请客多、谁请客少”，并据此调整下一次自己要不要主动买单。"],
-     [20,"你觉得自己“很会过日子、从不浪费”。请问：你有多常“意识到”这种会过其实建立在占别人或公共资源便宜之上？"],
+     [19,"免费的小袋子、纸巾、餐具之类，你会顺手多拿一点。",false],
+     [20,"活动免费赠品，哪怕用不上，你也会想“不拿白不拿”先拿了。",false],
+     [21,"占了别人或公家的小便宜，哪怕没人发现，你心里也会不舒服、想补回去。",true],
+     [22,"商家多找了钱或多退了款，你会犹豫一下，但大概率不会主动说。",false],
+     [23,"能用“咨询、请教”的名义白嫖朋友的专业本事，你很少主动提出付费或请客。",false],
+     [24,"免费的东西摆在面前，只要自己不需要，你就不会去拿。",true],
    ]},
 ];
+// 计分常量（与 scale_data.py 一致）
+const DIM_MIN=6, DIM_MAX=24, DIM_MID=15, INDEX_MU=60.0, INDEX_SD=13.0, DIM_STRETCH=0.78, DIM_FLOOR=6;
 
-const TIERS = [
-  [20,50,"鸡贼绝缘体","Jīzéi-Insulator","本测未检出显著鸡贼信号。你边界感健康、心态豁达，是朋友圈里那个少有的“不设防”的人。结论：清澈见底，请务必保护好钱包。"],
-  [51,56,"人间标准件","Standard-Issue Human","恭喜，出厂设置的正常人类。有正常的利己与自保，偶尔的小算计无伤大雅——平平无奇，妙不可言，挺好。"],
-  [57,62,"精致利己实习生","Self-Interest Trainee","你开始有点小心思了：每件事都说得过去，但隐隐能闻到一丝“精打细算”的味道。还没上瘾，但确实已经会算了。"],
-  [63,67,"精装鸡贼","Premium Edition","你的“不吃亏”已经成了惯性。单看每件事都合理，但身边人可能隐隐觉得一种说不清的“不大气”——谈不上讨厌，就是差点儿交心。"],
-  [68,100,"鸡贼奇点","Singularity","你已把“不吃亏”内化成本能，且逻辑高度自洽。你可能很成功、很体面、甚至受人尊敬，却很难有真正“毫无防备”的亲密关系——因为你和世界的关系，一直是计算，而非托付。"],
+const TIERS = [  // 按鸡贼指数 0–100，五档≈各 20%
+  [0,19,"鸡贼绝缘体","Jīzéi-Insulator","本测未检出显著鸡贼信号。你边界感健康、心态豁达，是朋友圈里那个少有的“不设防”的人。结论：清澈见底，请务必保护好钱包。"],
+  [20,39,"人间标准件","Standard-Issue Human","恭喜，出厂设置的正常人类。有正常的利己与自保，偶尔的小算计无伤大雅——平平无奇，妙不可言，挺好。"],
+  [40,59,"精致利己实习生","Self-Interest Trainee","你开始有点小心思了：每件事都说得过去，但隐隐能闻到一丝“精打细算”的味道。还没上瘾，但确实已经会算了。"],
+  [60,79,"精装鸡贼","Premium Edition","你的“不吃亏”已经成了惯性。单看每件事都合理，但身边人可能隐隐觉得一种说不清的“不大气”——谈不上讨厌，就是差点儿交心。"],
+  [80,100,"鸡贼奇点","Singularity","你已把“不吃亏”内化成本能，且逻辑高度自洽。你可能很成功、很体面、甚至受人尊敬，却很难有真正“毫无防备”的亲密关系——因为你和世界的关系，一直是计算，而非托付。"],
 ];
 
 const TYPES = {
@@ -2571,7 +2577,7 @@ function renderQ(){
   document.getElementById('pnum').textContent = (cur+1)+'/'+QUESTIONS.length;
   document.getElementById('dimchip').textContent = ax.dim;
   document.getElementById('qtext').textContent = q.text;
-  document.getElementById('qhint').textContent = REVERSE.has(q.id) ? '（本题反向计分：越常意识到，越清澈）' : '';
+  document.getElementById('qhint').textContent = '';  // 不暴露反向题，避免被刻意作答
   const opts = document.getElementById('opts'); opts.innerHTML='';
   ANCHORS.forEach((a,i)=>{
     const d=document.createElement('div');
@@ -2606,17 +2612,24 @@ const DIMFLAVOR = [
 ];
 
 /* ============================== 计分 ============================== */
-function scoreItem(id,ci){ return REVERSE.has(id) ? 5-ci : ci+1; }
+function scoreItem(id,ci){ return REVERSE.has(id) ? 4-ci : ci+1; } // 4选项：正向 ci+1，反向 5−x=4−ci
+function dimDisplay(d){ // 维度原始分(6..30) → 展示分(6..100)，平滑拉伸带底分
+  const t=(d-DIM_MIN)/(DIM_MAX-DIM_MIN), sg=t>=0.5?1:-1;
+  const s=0.5+sg*Math.pow(Math.abs(2*t-1),DIM_STRETCH)/2;
+  return Math.round(DIM_FLOOR+(100-DIM_FLOOR)*s);
+}
+function jindex(total){ return Math.round(100/(1+Math.exp(-1.7*(total-INDEX_MU)/INDEX_SD))); }
 function compute(){
   const sums=[0,0,0,0];
   QUESTIONS.forEach(q=>{ sums[q.ai]+=scoreItem(q.id, answers[q.id]); });
-  let code=''; AXES.forEach((ax,i)=> code += (sums[i]>=15? ax.high.l : ax.low.l));
+  let code=''; AXES.forEach((ax,i)=> code += (sums[i]>=DIM_MID? ax.high.l : ax.low.l));
   const total=sums.reduce((a,b)=>a+b,0);
-  let tier=TIERS[1]; for(const t of TIERS){ if(total>=t[0]&&total<=t[1]){tier=t;break;} }
+  const index=jindex(total);
+  let tier=TIERS[2]; for(const t of TIERS){ if(index>=t[0]&&index<=t[1]){tier=t;break;} }
   // 最贼 / 最清澈维度（并列取第一个）
   let hi=0, lo=0;
   for(let i=1;i<4;i++){ if(sums[i]>sums[hi]) hi=i; if(sums[i]<sums[lo]) lo=i; }
-  return {sums,code,total,tier,hi,lo};
+  return {sums,code,total,index,tier,hi,lo,disp:sums.map(dimDisplay)};
 }
 
 /* ============================== 结果 ============================== */
@@ -2628,20 +2641,19 @@ function finish(){
   document.getElementById('pfill').style.width='100%';
   const r=compute(); LAST=r; const info=TYPES[r.code];
   const col=pal(r.code); LAST.col=col; setAccent(col);  // 色卡随型号
-  try{ window.va&&window.va('event',{name:'completed',data:{code:r.code,tier:r.tier[2],total:r.total}}); }catch(e){}
+  try{ window.va&&window.va('event',{name:'completed',data:{code:r.code,tier:r.tier[2],index:r.index}}); }catch(e){}
   document.getElementById('rcode').textContent=r.code;
   document.getElementById('rtitle').textContent=info.t;
   document.getElementById('rtag').textContent=info.g;
-  document.getElementById('ridx').textContent=r.total+' / 100';
+  document.getElementById('ridx').textContent=r.index+' / 100';
   document.getElementById('rtier').innerHTML='段位 · '+r.tier[2]+'　<small>'+r.tier[3]+'</small>';
-  document.getElementById('ifill').style.width=Math.min(r.total,100)+'%';
+  document.getElementById('ifill').style.width=r.index+'%';
 
   const rows=document.getElementById('dimrows'); rows.innerHTML='';
   AXES.forEach((ax,i)=>{
-    const pole = r.sums[i]>=15? ax.high.n : ax.low.n;
-    const pct = Math.round(r.sums[i]/25*100);
+    const pole = r.sums[i]>=DIM_MID? ax.high.n : ax.low.n;
     rows.innerHTML += '<div class="dimrow"><span class="nm">'+ax.dim.split('·')[1].trim()+
-      '</span><span class="tk"><i style="width:'+pct+'%"></i></span><span class="pole">'+pole+' '+r.sums[i]+'</span></div>';
+      '</span><span class="tk"><i style="width:'+r.disp[i]+'%"></i></span><span class="pole">'+pole+' '+r.sums[i]+'</span></div>';
   });
 
   document.getElementById('rdesc').textContent=info.d;
@@ -2657,12 +2669,12 @@ function finish(){
   const hiName=AXES[r.hi].high.n, loName=AXES[r.lo].low.n;
   document.getElementById('rtierdesc').innerHTML =
     r.tier[4] +
-    '<div class="tierhl"><b>🔍 你最贼的一面：'+hiName+'（'+r.sums[r.hi]+'/25）</b><br>'+DIMFLAVOR[r.hi].hi+'。</div>' +
-    '<div class="tierhl"><b>✨ 你最清澈的一面：'+loName+'（'+r.sums[r.lo]+'/25）</b><br>'+DIMFLAVOR[r.lo].lo+'。</div>';
+    '<div class="tierhl"><b>🔍 你最贼的一面：'+hiName+'（'+r.sums[r.hi]+'/24）</b><br>'+DIMFLAVOR[r.hi].hi+'。</div>' +
+    '<div class="tierhl"><b>✨ 你最清澈的一面：'+loName+'（'+r.sums[r.lo]+'/24）</b><br>'+DIMFLAVOR[r.lo].lo+'。</div>';
 
   document.getElementById('cardimg').style.display='none';
   document.getElementById('savehint').style.display='none';
-  drawRadar(document.getElementById('radar'), r.sums, 1, col);
+  drawRadar(document.getElementById('radar'), r.disp, 1, col);
   show('result');
 }
 
@@ -2681,8 +2693,8 @@ function setAccent(col){
   document.documentElement.style.setProperty('--accent-d', col.d);
 }
 
-/* 雷达图。scale=设备像素缩放，col=配色（默认暖橙） */
-function drawRadar(cv, sums, dpr, col){
+/* 雷达图。vals=各维 0..100 展示分，scale=设备像素缩放，col=配色（默认暖橙） */
+function drawRadar(cv, vals, dpr, col){
   col = col||DEFCOL;
   dpr = dpr*(window.devicePixelRatio||1);
   const W=cv.width=340*dpr, H=cv.height=300*dpr;
@@ -2701,13 +2713,13 @@ function drawRadar(cv, sums, dpr, col){
   for(let k=0;k<N;k++){ const a=ang(k); ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+R*Math.cos(a),cy+R*Math.sin(a)); ctx.stroke(); }
   // shape
   ctx.beginPath();
-  for(let k=0;k<=N;k++){ const v=sums[k%N]/25, a=ang(k%N); const x=cx+R*v*Math.cos(a), y=cy+R*v*Math.sin(a); k?ctx.lineTo(x,y):ctx.moveTo(x,y);}
+  for(let k=0;k<=N;k++){ const v=vals[k%N]/100, a=ang(k%N); const x=cx+R*v*Math.cos(a), y=cy+R*v*Math.sin(a); k?ctx.lineTo(x,y):ctx.moveTo(x,y);}
   ctx.closePath();
   ctx.fillStyle=col.fill; ctx.fill();
   ctx.strokeStyle=col.a; ctx.lineWidth=2*dpr; ctx.stroke();
   // dots + labels
   ctx.fillStyle=col.a;
-  for(let k=0;k<N;k++){ const v=sums[k]/25, a=ang(k); const x=cx+R*v*Math.cos(a), y=cy+R*v*Math.sin(a); ctx.beginPath(); ctx.arc(x,y,3*dpr,0,7); ctx.fill(); }
+  for(let k=0;k<N;k++){ const v=vals[k]/100, a=ang(k); const x=cx+R*v*Math.cos(a), y=cy+R*v*Math.sin(a); ctx.beginPath(); ctx.arc(x,y,3*dpr,0,7); ctx.fill(); }
   ctx.fillStyle='#5a4f48'; ctx.font='bold '+(14*dpr)+'px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
   for(let k=0;k<N;k++){ const a=ang(k); const x=cx+(R+22*dpr)*Math.cos(a), y=cy+(R+18*dpr)*Math.sin(a); ctx.fillText(labels[k],x,y); }
 }
@@ -2730,10 +2742,10 @@ function makeCard(){
   ctx.fillStyle='#2b2b2b'; ctx.font='800 40px sans-serif'; ctx.fillText(info.t,CX,230);
   ctx.fillStyle='#8a7d74'; ctx.font='italic 19px sans-serif'; wrap(ctx,info.g,CX,266,W-130,26);
   // radar
-  const rc=document.createElement('canvas'); drawRadar(rc,r.sums,1.05/(window.devicePixelRatio||1),col);
+  const rc=document.createElement('canvas'); drawRadar(rc,r.disp,1.05/(window.devicePixelRatio||1),col);
   ctx.drawImage(rc,CX-150,296,300,265);
   // index + tier
-  ctx.fillStyle=col.a; ctx.font='800 30px sans-serif'; ctx.fillText('鸡贼指数 '+r.total+'/100',CX,602);
+  ctx.fillStyle=col.a; ctx.font='800 30px sans-serif'; ctx.fillText('鸡贼指数 '+r.index+'/100',CX,602);
   ctx.fillStyle='#5a4f48'; ctx.font='bold 22px sans-serif'; ctx.fillText('段位 · '+r.tier[2],CX,640);
   // quote —— 在标点处断行，避免掉行
   ctx.fillStyle='#6f6259'; ctx.font='21px sans-serif';
@@ -2804,7 +2816,7 @@ function wrap(ctx,text,cx,y,maxW,lh){
 function shareLink(){
   const url=location.href.split('#')[0];
   const r=LAST, info=r?TYPES[r.code]:null;
-  const text=info? `我的鸡贼型号是 ${r.code}「${info.t}」，鸡贼指数 ${r.total}/100。来测测你的👉` : '来测测你的鸡贼型号👉';
+  const text=info? `我的鸡贼型号是 ${r.code}「${info.t}」，鸡贼指数 ${r.index}/100。来测测你的👉` : '来测测你的鸡贼型号👉';
   if(navigator.share){ navigator.share({title:'JZTI 鸡贼人格', text, url}).catch(()=>{}); }
   else { navigator.clipboard?.writeText(text+' '+url).then(()=>alert('链接已复制，去粘贴给朋友吧！'),()=>prompt('复制这条链接分享：',url)); }
 }
