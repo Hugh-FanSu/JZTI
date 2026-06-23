@@ -7,9 +7,9 @@
 <title>JZTI · 鸡贼人格类型指标</title>
 <meta property="og:title" content="JZTI · 鸡贼人格类型指标">
 <meta property="og:description" content="测一测你是哪种鸡贼：华尔街之狼？散财童子？20题揭晓你的鸡贼型号。">
-<!-- Vercel Web Analytics（仅项目所有者在 Vercel 后台可见；需在 Dashboard 开启 Web Analytics） -->
-<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments);};</script>
-<script defer src="/_vercel/insights/script.js"></script>
+<meta property="og:url" content="https://jzti-test.icu/">
+<script>window.va=window.va||function(){};</script>
+<!-- ANALYTICS_PLACEHOLDER：迁阿里云 OSS 后，把 51.la 或 百度统计 给的统计脚本贴到这一行（数据仅你后台可见） -->
 <style>
   :root{
     --accent:#E8743B; --accent-d:#cf5e29; --ink:#2b2b2b;
@@ -2836,7 +2836,7 @@ function drawRadar(cv, vals, dpr, col){
 }
 
 /* ============================== 分享卡 ============================== */
-const SITE_URL='https://jzti.vercel.app/';
+const SITE_URL='https://jzti-test.icu/';
 function makeCard(){
   const r=LAST, info=TYPES[r.code], col=pal(r.code);
   const dpr=2, W=600, H=1040, cv=document.createElement('canvas');
@@ -2875,7 +2875,7 @@ function makeCard(){
   const tx=qx+qs+28;
   ctx.textAlign='left';
   ctx.fillStyle='#2b2b2b'; ctx.font='bold 20px sans-serif'; ctx.fillText('扫码测你的鸡贼型号',tx,qy+32);
-  ctx.fillStyle=col.a; ctx.font='bold 17px sans-serif'; ctx.fillText('jzti.vercel.app',tx,qy+62);
+  ctx.fillStyle=col.a; ctx.font='bold 17px sans-serif'; ctx.fillText('jzti-test.icu',tx,qy+62);
   ctx.fillStyle='#b6a9a0'; ctx.font='13px sans-serif'; ctx.fillText('或长按本图保存转发',tx,qy+90);
   ctx.fillStyle='#cabdb3'; ctx.font='12px sans-serif'; ctx.fillText('本量表纯属娱乐 · 信效度为 0',tx,qy+114);
 

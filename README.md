@@ -7,7 +7,7 @@
 
 ## 在线体验
 
-👉 **https://jzti.vercel.app/**
+👉 **https://jzti-test.icu/**（阿里云 OSS · 已备案，境内可访问）
 
 ## 文件说明
 
