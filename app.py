@@ -14,7 +14,7 @@ import streamlit as st
 
 from scale_data import (
     AXES, ANCHORS, TYPES, TIERS, DIM_MID,
-    dim_raw, dim_display, jindex, total_raw, type_code, tier_of,
+    dim_raw, dim_display, jindex, total_raw, raw_score, type_code, tier_of,
 )
 
 # ---------------------------------------------------------------------------
@@ -148,7 +148,7 @@ def radar_figure(sums):
     return fig
 
 
-def share_card(code, info, tier_name, index, sums):
+def share_card(code, info, tier_name, score, pct, sums):
     """生成一张可截图分享的结果卡（含小雷达图）。返回 PNG bytes。"""
     fig = plt.figure(figsize=(6.4, 8.4), dpi=160)
     fig.patch.set_facecolor("#FFFFFF")
@@ -176,7 +176,7 @@ def share_card(code, info, tier_name, index, sums):
     rad.fill(angles + angles[:1], vals + vals[:1], color=ACCENT, alpha=0.25)
     rad.grid(color="#e3e3e3")
 
-    fig.text(0.5, 0.345, f"段位：{tier_name}　|　鸡贼指数 {index}/100",
+    fig.text(0.5, 0.345, f"段位：{tier_name}　|　鸡贼指数 {score}/100　|　也许击败 {pct}%",
              ha="center", fontsize=14, fontweight="bold", color=ACCENT)
 
     # 语录
@@ -207,9 +207,10 @@ def share_card(code, info, tier_name, index, sums):
 if submitted:
     code, sums = type_code(answers)
     total = total_raw(answers)
-    index = jindex(total)
+    score = raw_score(total)   # 鸡贼指数（绝对分）
+    pct = jindex(total)        # 百分位（相对排名）
     info = TYPES[code]
-    tier_name, tier_en, tier_desc = tier_of(index)
+    tier_name, tier_en, tier_desc = tier_of(pct)
 
     st.markdown("---")
     st.markdown(f'<div class="result-code">{code}</div>', unsafe_allow_html=True)
@@ -220,10 +221,11 @@ if submitted:
     with c1:
         st.pyplot(radar_figure(sums))
     with c2:
-        st.metric("鸡贼指数", f"{index} / 100")
+        st.metric("鸡贼指数", f"{score} / 100")
+        st.caption(f"🏆 鸡贼程度也许击败了 {pct}% 的用户")
         st.markdown(f"**段位　{tier_name}**  \n<span style='color:#999'>{tier_en}</span>",
                     unsafe_allow_html=True)
-        st.progress(min(index, 100) / 100)
+        st.progress(min(score, 100) / 100)
         # 各维度小条
         for ax, s in zip(AXES, sums):
             pole = ax["high"]["name"] if s >= DIM_MID else ax["low"]["name"]
@@ -251,7 +253,7 @@ if submitted:
 
     # 分享卡
     st.markdown("#### 📸 一键生成分享卡")
-    card = share_card(code, info, tier_name, index, sums)
+    card = share_card(code, info, tier_name, score, pct, sums)
     st.image(card, caption="长按/右键保存，或点下方按钮下载，发群里炫一下。", use_container_width=True)
     st.download_button("⬇️ 下载分享卡 (PNG)", data=card,
                        file_name=f"JZTI_{code}.png", mime="image/png",
