@@ -102,6 +102,10 @@
   .desc{color:#5a4f48; font-size:.98rem;}
   .cardimg{width:100%; border-radius:16px; border:1px solid var(--line); margin-top:10px; display:none;}
   .savehint{text-align:center; color:var(--muted); font-size:.8rem; margin:8px 0 0; display:none;}
+  .achieve{display:none; background:linear-gradient(135deg,#FFF1E4,#FFE6D2); border:1px solid var(--line); border-radius:14px; padding:11px 16px; margin-bottom:14px; text-align:center;}
+  .achieve .ach-row{margin:5px 0;}
+  .achieve .ach-row b{color:var(--accent-d); font-size:.96rem;}
+  .achieve .ach-row span{display:block; color:#6f6259; font-size:.82rem; margin-top:2px;}
   .howto{margin-top:22px; background:#fff; border:1px solid var(--line); border-radius:14px; padding:4px 16px;}
   .howto summary{cursor:pointer; padding:12px 0; font-weight:600; color:var(--accent-d); font-size:.92rem; list-style:none;}
   .howto summary::-webkit-details-marker{display:none;}
@@ -146,6 +150,7 @@
 
   <!-- ===== RESULT ===== -->
   <section id="result" class="screen">
+    <div class="achieve" id="rachieve"></div>
     <div class="r-code" id="rcode"></div>
     <div class="r-title" id="rtitle"></div>
     <div class="r-tag" id="rtag"></div>
@@ -201,13 +206,31 @@
   <section id="egg" class="screen">
     <div style="text-align:center; padding-top:36px;">
       <div style="font-size:64px; line-height:1;">🥚</div>
-      <div class="r-code" style="font-size:1.6rem; letter-spacing:.1rem;">隐藏类型</div>
+      <div class="r-code" style="font-size:1.35rem; letter-spacing:.08rem;">🏆 隐藏成就达成</div>
       <div class="r-title">鸡贼测试者</div>
-      <div class="r-tag">疑似一路点了同一个选项</div>
-      <div class="desc" style="margin:18px 4px 0;">你是不是 24 道题全点了同一个选项？😏<br>
-        每道题其实都不一样（还藏着反向题），这么点是测不准的。<br>
-        认真看题、按你真实的反应选，才知道你到底有多鸡贼。</div>
-      <button class="btn" style="margin-top:28px" onclick="restart()">↺ 好好重测一次</button>
+      <div style="font-size:2.7rem; font-weight:800; color:var(--accent); margin-top:8px;">鸡贼指数 100 / 100</div>
+      <div class="r-tag" style="margin-top:2px;">满分 · 封顶</div>
+      <div class="desc" style="margin:16px 4px 0;"><span id="eggreason">你 24 道题全点了同一个选项 😏</span><br>
+        能把「测鸡贼的测试」也一路敷衍到满分——<b>这本身就很鸡贼</b>，<br>给你拉满。<br>
+        不过想知道你<b>真实</b>有多鸡贼，还得认真看题、好好选。</div>
+      <button class="btn" style="margin-top:26px" onclick="restart()">↺ 好好重测一次</button>
+      <div class="foot">JZTI · 鸡贼人格类型指标　|　本量表纯属娱乐，信效度为 0</div>
+    </div>
+  </section>
+
+  <!-- ===== 隐藏彩蛋②：用时超过 10 分钟 → 反省者 ===== -->
+  <section id="reflect" class="screen">
+    <div style="text-align:center; padding-top:36px;">
+      <div style="font-size:64px; line-height:1;">🪞</div>
+      <div class="r-code" style="font-size:1.35rem; letter-spacing:.08rem;">🌿 隐藏成就达成</div>
+      <div class="r-title">反省者</div>
+      <div style="font-size:2.2rem; font-weight:800; color:var(--accent); margin-top:8px;">鸡贼指数：无法显示</div>
+      <div class="r-tag" style="margin-top:2px;">超出量表量程</div>
+      <div class="desc" style="margin:16px 4px 0;">你在这套题上花了 10 分钟以上。<br>
+        比起测出一个标签，你好像更在认真琢磨——<b>自己在生活里，到底算不算一个鸡贼的人</b>。<br>
+        这种诚实的自省，已经不是一个分数能衡量的了。所以指数<b>无法显示</b>——这不是 bug，是敬意。</div>
+      <button class="btn" style="margin-top:26px" onclick="renderResult(LAST)">🙈 还是想看看我的型号</button>
+      <button class="btn ghost" style="margin-top:10px" onclick="restart()">↺ 重新测一次</button>
       <div class="foot">JZTI · 鸡贼人格类型指标　|　本量表纯属娱乐，信效度为 0</div>
     </div>
   </section>
@@ -2528,7 +2551,7 @@ const AXES = [
      [2,"别人请你吃饭，你回请时不会刻意去对齐价位、计较谁花得多，心意到了就好。",true],
      [3,"聚餐买单，你常会主动抢着付，不太计较这次是不是该你。",true],
      [4,"需要有人先垫钱时，你会尽量不做那个垫付的人。",false],
-     [5,"帮人垫过钱或带过东西，对方没及时结，你会一直记着，并悄悄不太想再帮第二次。",false],
+     [5,"帮人垫过钱或带过东西，对方要是没及时还，你会有点在意，下次帮忙的热情也会悄悄少一些。",false],
      [6,"别人忘了还你一笔小钱，你转头就忘了，根本不放在心上。",true],
    ]},
   {dim:"维度二 · 体面的推脱", sub:"理由充分，从不硬刚",
@@ -2538,7 +2561,7 @@ const AXES = [
      [8,"团队需要有人多干时，你总能找到合理的理由，让自己不当那个多干的人。",false],
      [9,"大家都在互相推的烫手活儿，你常会主动接下来。",true],
      [10,"轮流做麻烦事（值班、组织活动），你会尽量不当第一个、也不做最多的那个。",false],
-     [11,"出了问题要有人担责时，你的第一反应是先想清楚“这事怎么算不到我头上”。",false],
+     [11,"出了岔子需要有人担责时，你会本能地先理一理“这件事其实不太怪我”。",false],
      [12,"答应了别人的事，哪怕后来发现很麻烦、自己吃亏，你也会做完。",true],
    ]},
   {dim:"维度三 · 温和的双标", sub:"严待人，宽律己，但不声张",
@@ -2548,7 +2571,7 @@ const AXES = [
      [14,"同样一件麻烦别人的小事（求点赞、借东西），别人做你嫌烦，自己做你觉得“就这一次没关系”。",false],
      [15,"评价一件事，你会尽量用同一把尺子，不会因为是自己就放宽标准。",true],
      [16,"别人成功时，你会真心替对方高兴，也认可那是人家的努力和本事。",true],
-     [17,"你希望别人对你坦诚直接，自己对别人却习惯委婉保留，还觉得这才是高情商。",false],
+     [17,"你希望别人对你坦诚直接，自己对别人却更习惯委婉、留三分。",false],
      [18,"自己做错了，你能像要求别人一样要求自己，照样认错。",true],
    ]},
   {dim:"维度四 · 隐形的获利", sub:"占便宜而不自知",
@@ -2599,6 +2622,7 @@ const TYPES = {
 const QUESTIONS = [];
 AXES.forEach((ax,ai)=>ax.items.forEach(it=>QUESTIONS.push({id:it[0],text:it[1],ai})));
 let cur = 0;
+let startTime = 0;  // 开始答题时间戳，用于计时彩蛋
 const answers = {}; // id -> choiceIndex 0..4
 
 /* ============================== 流程 ============================== */
@@ -2607,7 +2631,7 @@ function show(id){
   document.getElementById(id).classList.add('active');
   window.scrollTo(0,0);
 }
-function start(){ cur=0; renderQ(); show('quiz'); }
+function start(){ cur=0; startTime=Date.now(); renderQ(); show('quiz'); }
 function restart(){ for(const k in answers) delete answers[k]; cur=0; setAccent(PALETTE[0]); document.getElementById('cardimg').style.display='none'; document.getElementById('savehint').style.display='none'; show('intro'); }
 
 function renderQ(){
@@ -2650,6 +2674,18 @@ const DIMFLAVOR = [
   {hi:"免费的便宜，实在很难拒绝",       lo:"宁可自己吃点亏，也不占人便宜"},
 ];
 
+/* 隐藏成就：某维度答到极端（拉满 24 / 触底 6）即解锁。i=维度，hi=是否拉满 */
+const ACHIEVEMENTS=[
+  {i:0,hi:true, name:"💰 极致精算",   d:"利己维度拉满——你对每一分钱、每一次人情都有杆秤。"},
+  {i:0,hi:false,name:"🌊 对钱不设防", d:"利己维度触底——钱和人情的事，你是真不往心里去。"},
+  {i:1,hi:true, name:"🏃 甩锅宗师",   d:"推脱维度拉满——天下没有你躲不掉的活儿。"},
+  {i:1,hi:false,name:"🐂 扛把子",     d:"推脱维度触底——脏活累活，你从不往后缩。"},
+  {i:2,hi:true, name:"⚖️ 双标之王",   d:"双标维度拉满——对人是放大镜，对己是马赛克。"},
+  {i:2,hi:false,name:"🤝 一碗水端平", d:"双标维度触底——对人对己，同一把尺。"},
+  {i:3,hi:true, name:"🧲 薅秃了",     d:"获利维度拉满——免费的东西，见了你都发抖。"},
+  {i:3,hi:false,name:"🍃 一毛不占",   d:"获利维度触底——便宜送上门，你都摆手。"},
+];
+
 /* ============================== 计分 ============================== */
 function scoreItem(id,ci){ return REVERSE.has(id) ? 4-ci : ci+1; } // 4选项：正向 ci+1，反向 5−x=4−ci
 function dimDisplay(d){ // 维度原始分(6..30) → 展示分(6..100)，平滑拉伸带底分
@@ -2685,12 +2721,31 @@ function finish(){
   // 兜底：若有题没作答（理论上不会），跳回那一题，绝不显示 NaN
   const miss = QUESTIONS.find(q=>answers[q.id]==null);
   if(miss){ cur=QUESTIONS.indexOf(miss); renderQ(); return; }
-  // 隐藏彩蛋：24 题全点同一个选项 → 鸡贼测试者
+  LAST=compute();
+  const elapsed = startTime ? (Date.now()-startTime)/1000 : 120;  // 用时(秒)
   const a0=answers[QUESTIONS[0].id];
-  if(QUESTIONS.every(q=>answers[q.id]===a0)){ setAccent(PALETTE[0]); show('egg'); return; }
+  const uniform = QUESTIONS.every(q=>answers[q.id]===a0);
+  // 隐藏彩蛋①：全点同一个选项 或 30 秒内冲完 → 鸡贼测试者
+  if(uniform || elapsed < 30){
+    document.getElementById('eggreason').innerHTML = uniform
+      ? '你 24 道题全点了同一个选项 😏'
+      : '你不到 30 秒就答完了 😏';
+    setAccent(PALETTE[4]); show('egg'); return;  // 满级冷靛配色
+  }
+  // 隐藏彩蛋②：用时超过 10 分钟 → 反省者
+  if(elapsed > 600){ setAccent(PALETTE[2]); show('reflect'); return; }
+  renderResult(LAST);
+}
+function renderResult(r){
   document.getElementById('pfill').style.width='100%';
-  const r=compute(); LAST=r; const info=TYPES[r.code];
-  const col=pal(r.code); LAST.col=col; setAccent(col);  // 色卡随型号
+  // 隐藏成就：维度极端
+  const ach=ACHIEVEMENTS.filter(a=> a.hi ? r.sums[a.i]===DIM_MAX : r.sums[a.i]===DIM_MIN);
+  const ae=document.getElementById('rachieve');
+  if(ach.length){ ae.style.display='block';
+    ae.innerHTML=ach.map(a=>'<div class="ach-row"><b>🎉 隐藏成就 · '+a.name+'</b><span>'+a.d+'</span></div>').join('');
+  } else { ae.style.display='none'; ae.innerHTML=''; }
+  const info=TYPES[r.code];
+  const col=pal(r.code); r.col=col; setAccent(col);  // 色卡随型号
   try{ window.va&&window.va('event',{name:'completed',data:{code:r.code,tier:r.tier[2],score:r.score,pct:r.pct}}); }catch(e){}
   document.getElementById('rcode').textContent=r.code;
   document.getElementById('rtitle').textContent=info.t;
