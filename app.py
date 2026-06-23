@@ -14,7 +14,7 @@ import streamlit as st
 
 from scale_data import (
     AXES, ANCHORS, TYPES, TIERS, DIM_MID,
-    dim_raw, dim_display, jindex, total_raw, raw_score, type_code, tier_of,
+    dim_raw, dim_display, jindex, total_raw, raw_score, type_code, tier_of, TIER_EMOJI,
 )
 
 # ---------------------------------------------------------------------------
@@ -176,7 +176,7 @@ def share_card(code, info, tier_name, score, pct, sums):
     rad.fill(angles + angles[:1], vals + vals[:1], color=ACCENT, alpha=0.25)
     rad.grid(color="#e3e3e3")
 
-    fig.text(0.5, 0.345, f"段位：{tier_name}　|　鸡贼指数 {score}/100　|　也许击败 {pct}%",
+    fig.text(0.5, 0.345, f"段位：{tier_name}　|　鸡贼指数 {score}/100",
              ha="center", fontsize=14, fontweight="bold", color=ACCENT)
 
     # 语录
@@ -223,12 +223,12 @@ if submitted:
     with c2:
         st.metric("鸡贼指数", f"{score} / 100")
         st.caption(f"🏆 鸡贼程度也许击败了 {pct}% 的用户")
-        st.markdown(f"**段位　{tier_name}**  \n<span style='color:#999'>{tier_en}</span>",
-                    unsafe_allow_html=True)
+        st.markdown(f"**{TIER_EMOJI.get(tier_name,'')} 段位　{tier_name}**  \n"
+                    f"<span style='color:#999'>{tier_en}</span>", unsafe_allow_html=True)
         st.progress(min(score, 100) / 100)
         # 各维度小条
         for ax, s in zip(AXES, sums):
-            pole = ax["high"]["name"] if s >= DIM_MID else ax["low"]["name"]
+            pole = ax["high"]["name"] if s > DIM_MID else ax["low"]["name"]
             st.caption(f"{ax['dim'].split('·')[1].strip()}：{s}/30 → **{pole}**")
 
     st.markdown(f"#### 🧬 关于「{info['title']}」")

@@ -102,6 +102,13 @@
   .desc{color:#5a4f48; font-size:.98rem;}
   .cardimg{width:100%; border-radius:16px; border:1px solid var(--line); margin-top:10px; display:none;}
   .savehint{text-align:center; color:var(--muted); font-size:.8rem; margin:8px 0 0; display:none;}
+  .howto{margin-top:22px; background:#fff; border:1px solid var(--line); border-radius:14px; padding:4px 16px;}
+  .howto summary{cursor:pointer; padding:12px 0; font-weight:600; color:var(--accent-d); font-size:.92rem; list-style:none;}
+  .howto summary::-webkit-details-marker{display:none;}
+  .howto summary::before{content:"▸ "; color:var(--accent);}
+  .howto[open] summary::before{content:"▾ ";}
+  .howto-body{padding:2px 2px 12px; color:#5a4f48; font-size:.86rem; line-height:1.7;}
+  .howto-body p{margin:.5rem 0;}
   .foot{text-align:center; color:#c3b6ad; font-size:.76rem; margin-top:26px; line-height:1.7;}
   .credit{text-align:center; color:#bbada3; font-size:.74rem; margin-top:12px; line-height:1.6;}
 </style>
@@ -170,12 +177,39 @@
     <img class="cardimg" id="cardimg" alt="分享卡">
     <div class="savehint" id="savehint">📱 长按图片即可保存 · 电脑端右键另存 · 发群里炫一下</div>
 
+    <details class="howto">
+      <summary>ℹ️ 这些分数和型号是怎么算出来的？</summary>
+      <div class="howto-body">
+        <p><b>鸡贼型号（4 个字母）</b>：你在四个维度上各偏哪一边——精算/大方、闪躲/扛事、双标/公允、薅毛/买单。它是你的<b>倾向方向</b>，跟“贼得多狠”无关。</p>
+        <p><b>鸡贼指数（0–100）</b>：24 题总分线性换算成的<b>绝对分</b>，答得越贼越高。</p>
+        <p><b>也许击败 X%</b>：把你的总分放到一条正态分布曲线上估出来的<b>百分位排名</b>（大概比多少人更贼）。</p>
+        <p><b>段位</b>：按这个百分位分成 8 档。</p>
+        <p>⚠️ <b>型号是“方向”，指数/段位是“强度”，本就是两回事</b>——所以“偏清澈的型号 + 中等强度”很正常，不矛盾。每维含 3 正 + 3 反向题，反向题用来抵消“一路瞎选”。</p>
+        <p>本量表纯属娱乐，<b>信效度为 0</b>。</p>
+      </div>
+    </details>
+
     <div class="btn-row">
       <button class="btn ghost" onclick="restart()">↺ 再测一次</button>
       <button class="btn" onclick="shareLink()">🔗 分享给朋友</button>
     </div>
     <div class="foot">JZTI · 鸡贼人格类型指标　|　本量表纯属娱乐，信效度为 0<br>
       作者：公众号「人类行为研究室」 · 改造自公众号「铁围山」（鸡贼行为倾向量表 Chengdu Cunning Scale）</div>
+  </section>
+
+  <!-- ===== 隐藏彩蛋：一路点同一个选项 ===== -->
+  <section id="egg" class="screen">
+    <div style="text-align:center; padding-top:36px;">
+      <div style="font-size:64px; line-height:1;">🥚</div>
+      <div class="r-code" style="font-size:1.6rem; letter-spacing:.1rem;">隐藏类型</div>
+      <div class="r-title">鸡贼测试者</div>
+      <div class="r-tag">疑似一路点了同一个选项</div>
+      <div class="desc" style="margin:18px 4px 0;">你是不是 24 道题全点了同一个选项？😏<br>
+        每道题其实都不一样（还藏着反向题），这么点是测不准的。<br>
+        认真看题、按你真实的反应选，才知道你到底有多鸡贼。</div>
+      <button class="btn" style="margin-top:28px" onclick="restart()">↺ 好好重测一次</button>
+      <div class="foot">JZTI · 鸡贼人格类型指标　|　本量表纯属娱乐，信效度为 0</div>
+    </div>
   </section>
 
 </div>
@@ -2543,7 +2577,7 @@ const TIERS = [  // 按鸡贼指数 0–100，8 档≈各 12.5%
 ];
 
 const TYPES = {
- "ADBL":{t:"华尔街之狼",g:"把人情往来跑成 Excel，每笔都算内部收益率。",d:"四维全开的满级形态。利己精算、闪躲麻烦、对人对己两套尺、免费的绝不放过。你不是坏人，你只是从不让自己在任何一笔交易里吃亏——哪怕那笔交易是友情。",q:"亲兄弟，明算账；账算完了，还是亲兄弟（大概）。",nem:"GCFP",nwhy:"他不设防的大方，把你的精打细算衬得很吵。",mat:"ACFP",mwhy:"一样会算账，但他算完不坑人——看得懂你，又不怕你。"},
+ "ADBL":{t:"华尔街之狼",g:"把人情往来跑成 Excel，每笔都算内部收益率。",d:"四维全偏贼向：利己精算、闪躲麻烦、对人对己两套尺、免费的绝不放过。你不是坏人，你只是从不让自己在任何一笔交易里吃亏——哪怕那笔交易是友情。（具体贼到什么程度，看段位。）",q:"亲兄弟，明算账；账算完了，还是亲兄弟（大概）。",nem:"GCFP",nwhy:"他不设防的大方，把你的精打细算衬得很吵。",mat:"ACFP",mwhy:"一样会算账，但他算完不坑人——看得懂你，又不怕你。"},
  "ADBP":{t:"口是心非财神爷",g:"嘴上博弈论，手上却常常买单。",d:"算计、闪躲、双标全部在线，唯独到了掏钱那一刻你会咬牙买单。脑子里运行着一整套利益模型，执行时却总有“算了我来吧”的破绽——别扭，但可爱。",q:"道理我都懂，但这顿我请——记得啊。",nem:"ADBL",nwhy:"一样会算，但他真下得去手，把你衬成软柿子。",mat:"GCBP",mwhy:"都嘴硬手软，互相嫌弃又互相买单，闭环了。"},
  "ADFL":{t:"持证薅羊毛选手",g:"讲原则地占便宜，理直气壮。",d:"精算、闪躲、薅毛俱全，但你对人对己一把尺（不双标）。你占便宜从不偷偷摸摸——规则没说不行，那就是行，谁也别想让你愧疚。",q:"规则没写不能拿，那就是默许我拿。",nem:"GCBL",nwhy:"他双标地热心，你公允地薅毛，价值观天天打架。",mat:"ACFL",mwhy:"两个讲原则的过日子人，薅毛都薅在明面上，省心。"},
  "ADFP":{t:"内耗型大善人",g:"算了半天，最后还是亏自己。",d:"脑内精算 + 习惯性想躲，但你公允、且真到关头愿意买单。典型的“想得多、做得善”——心里盘算一百遍，行动起来还是那个吃小亏的老实人。",q:"算了，算了……（这次是真的算了）",nem:"ADBL",nwhy:"你还在纠结，他已经把你算明白并安排好了。",mat:"GCBP",mwhy:"都是嘴硬心软的吃亏型，凑一起只会互相心疼。"},
@@ -2558,7 +2592,7 @@ const TYPES = {
  "GCBL":{t:"双标热心肠",g:"我对你好是真的，我双标也是真的。",d:"大方 + 扛事，但双标 + 爱薅毛。你是真大方、真能干，只是对别人一套标准、对自己另一套，外加免费的不放过——一个矛盾但鲜活的好人。",q:"我可以帮你，但你别学我这么干。",nem:"ADFL",nwhy:"他公允得理直气壮，专戳你藏起来的双标。",mat:"GCFL",mwhy:"都心大、不算计，相处起来松弛又自在。"},
  "GCBP":{t:"嘴上拉黑，钱包打钱",g:"我嫌弃你归嫌弃你，钱还是我付。",d:"大方、扛事、买单，只是嘴上有点双标。评判别人时一套一套，行动上却全是付出和兜底——你的“贼”仅停留在吐槽阶段，落地全是善良。",q:"就你这样还好意思？……行吧，我转你了。",nem:"ADBP",nwhy:"你俩都口是心非，但他还会算计，你只会纯吃亏。",mat:"ADFP",mwhy:"都是嘴硬心软的老好人，互相心疼、抢着买单。"},
  "GCFL":{t:"酒店咖啡顺手党",g:"我很清澈，除了赠品。",d:"大方、扛事、公允，几乎全清澈，唯一保留项是“免费的不拒绝”。世上最无害的一种鸡贼——你的全部“黑历史”，可能只是多拿了两包酒店的免费咖啡。",q:"免费的我不抢，但放我跟前我会收下。",nem:"ADBL",nwhy:"他把一切跑成 KPI，把你的随性衬得像没心眼。",mat:"GDFP",mwhy:"都是与世无争的小透明，处着毫无压力。"},
- "GCFP":{t:"散财童子",g:"钱嘛，生不带来，死不带去。",d:"四维满级清澈：大方、扛事、公允、买单。朋友圈最后的圣人——也可能是大家眼里温柔的冤大头。你和世界的关系是托付，不是计算，所以你常吃小亏，却也最容易被人“毫无防备”地爱着。",q:"钱不重要，重要的是……诶我钱包呢？",nem:"ADBL",nwhy:"他算得越精，你越像个傻白甜——但你傻得快乐。",mat:"ACFP",mwhy:"他精明却不坑人，刚好接得住你的不设防。"},
+ "GCFP":{t:"散财童子",g:"钱嘛，生不带来，死不带去。",d:"四维都偏清澈：大方、扛事、公允、买单。朋友圈里偏暖的那种人——也可能是大家眼里温柔的冤大头。你和世界的关系更多是托付，不是计算，所以你常吃小亏，却也最容易被人“毫无防备”地爱着。",q:"钱不重要，重要的是……诶我钱包呢？",nem:"ADBL",nwhy:"他算得越精，你越像个傻白甜——但你傻得快乐。",mat:"ACFP",mwhy:"他精明却不坑人，刚好接得住你的不设防。"},
 };
 
 /* ============================== 状态 ============================== */
@@ -2634,7 +2668,7 @@ function jindex(total){ return Math.round(100*0.5*(1+erf((total-INDEX_MU)/(INDEX
 function compute(){
   const sums=[0,0,0,0];
   QUESTIONS.forEach(q=>{ sums[q.ai]+=scoreItem(q.id, answers[q.id]); });
-  let code=''; AXES.forEach((ax,i)=> code += (sums[i]>=DIM_MID? ax.high.l : ax.low.l));
+  let code=''; AXES.forEach((ax,i)=> code += (sums[i]>DIM_MID? ax.high.l : ax.low.l));  // 严格高于中点才算“贼极”
   const total=sums.reduce((a,b)=>a+b,0);
   const score=Math.round((total-24)/72*100);  // 鸡贼指数：绝对分 0–100（线性，与他人无关）
   const pct=jindex(total);                      // 百分位：正态分布排名（你在人群里的位置）
@@ -2651,6 +2685,9 @@ function finish(){
   // 兜底：若有题没作答（理论上不会），跳回那一题，绝不显示 NaN
   const miss = QUESTIONS.find(q=>answers[q.id]==null);
   if(miss){ cur=QUESTIONS.indexOf(miss); renderQ(); return; }
+  // 隐藏彩蛋：24 题全点同一个选项 → 鸡贼测试者
+  const a0=answers[QUESTIONS[0].id];
+  if(QUESTIONS.every(q=>answers[q.id]===a0)){ setAccent(PALETTE[0]); show('egg'); return; }
   document.getElementById('pfill').style.width='100%';
   const r=compute(); LAST=r; const info=TYPES[r.code];
   const col=pal(r.code); LAST.col=col; setAccent(col);  // 色卡随型号
@@ -2660,12 +2697,12 @@ function finish(){
   document.getElementById('rtag').textContent=info.g;
   document.getElementById('ridx').textContent=r.score+' / 100';
   document.getElementById('rpct').innerHTML='🏆 鸡贼程度也许击败了 <b>'+r.pct+'%</b> 的用户';
-  document.getElementById('rtier').innerHTML='段位 · '+r.tier[2]+'　<small>'+r.tier[3]+'</small>';
+  document.getElementById('rtier').innerHTML=(TIER_EMOJI[r.tier[2]]||'')+' 段位 · '+r.tier[2]+'　<small>'+r.tier[3]+'</small>';
   document.getElementById('ifill').style.width=r.score+'%';
 
   const rows=document.getElementById('dimrows'); rows.innerHTML='';
   AXES.forEach((ax,i)=>{
-    const pole = r.sums[i]>=DIM_MID? ax.high.n : ax.low.n;
+    const pole = r.sums[i]>DIM_MID? ax.high.n : ax.low.n;
     rows.innerHTML += '<div class="dimrow"><span class="nm">'+ax.dim.split('·')[1].trim()+
       '</span><span class="tk"><i style="width:'+r.disp[i]+'%"></i></span><span class="pole">'+pole+' '+r.sums[i]+'</span></div>';
   });
@@ -2693,6 +2730,11 @@ function finish(){
 }
 
 /* 色卡随型号：按“鸡贼极”数量(0~4)从暖到冷 —— 越清澈越暖，越贼越冷 */
+// 各段位专属 emoji（清澈 → 贼，递进）
+const TIER_EMOJI={
+  "鸡贼绝缘体":"😇","人间清流":"💧","人间标准件":"🙂","入门级鸡贼":"🐣",
+  "进阶鸡贼":"🧮","精装鸡贼":"💼","骨灰级老贼":"🦉","鸡贼奇点":"👑"
+};
 const PALETTE=[
   {a:'#E8743B',d:'#cf5e29',bg1:'#FFF7F2',bg2:'#FBEADF',fill:'rgba(232,116,59,.26)'}, // 0 清澈·暖橙
   {a:'#E0993A',d:'#bf7f22',bg1:'#FFF9EE',bg2:'#FBEFD6',fill:'rgba(224,153,58,.26)'}, // 1 暖琥珀
@@ -2759,9 +2801,9 @@ function makeCard(){
   const rc=document.createElement('canvas'); drawRadar(rc,r.disp,1.05/(window.devicePixelRatio||1),col);
   ctx.drawImage(rc,CX-150,296,300,265);
   // index + tier
-  ctx.fillStyle=col.a; ctx.font='800 30px sans-serif'; ctx.fillText('鸡贼指数 '+r.score+'/100',CX,600);
-  ctx.fillStyle='#8a7d74'; ctx.font='15px sans-serif'; ctx.fillText('🏆 也许击败了 '+r.pct+'% 的用户',CX,627);
-  ctx.fillStyle='#5a4f48'; ctx.font='bold 22px sans-serif'; ctx.fillText('段位 · '+r.tier[2],CX,656);
+  ctx.fillStyle=col.a; ctx.font='800 30px sans-serif'; ctx.fillText('鸡贼指数 '+r.score+'/100',CX,606);
+  ctx.fillStyle='#5a4f48'; ctx.font='bold 24px sans-serif';
+  ctx.fillText((TIER_EMOJI[r.tier[2]]||'')+' 段位 · '+r.tier[2],CX,648);
   // quote —— 在标点处断行，避免掉行
   ctx.fillStyle='#6f6259'; ctx.font='21px sans-serif';
   const qlines=wrapPunct(ctx,'「'+info.q+'」', W-120);
